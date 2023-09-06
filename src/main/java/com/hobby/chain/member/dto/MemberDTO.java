@@ -12,7 +12,7 @@ public class MemberDTO {
     private String nickName;
     private String phoneNumber;
     private String gender;
-    private Date birth;
+    private String birth;
 
     public MemberDTO(String userId,
                      String password,
@@ -20,7 +20,7 @@ public class MemberDTO {
                      String nickName,
                      String phoneNumber,
                      String gender,
-                     Date birth) {
+                     String birth) {
         this.userId = userId;
         this.password = password;
         this.name = name;

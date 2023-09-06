@@ -16,7 +16,7 @@ public class Member {
     private String nickName;
     private String phoneNumber;
     private String gender;
-    private Date birth;
+    private String birth;
     private Timestamp regdate;
 
 
@@ -28,7 +28,7 @@ public class Member {
             @Param("nickName") String nickName,
             @Param("phoneNumber") String phoneNumber,
             @Param("gender") String gender,
-            @Param("birth") Date birth,
+            @Param("birth") String birth,
             @Param("regdate") Timestamp regdate){
         this.userId = userId;
         this.password = password;
