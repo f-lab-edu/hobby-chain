@@ -1,5 +1,6 @@
 package com.hobby.chain.member.domain.entity;
 
+import com.hobby.chain.member.Gender;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.ibatis.annotations.Param;
@@ -15,21 +16,21 @@ public class Member {
     private String name;
     private String nickName;
     private String phoneNumber;
-    private String gender;
+    private Gender gender;
     private String birth;
     private Timestamp regdate;
 
 
     @Builder
     public Member(
-            @Param("userId") String userId,
-            @Param("password") String password,
-            @Param("name") String name,
-            @Param("nickName") String nickName,
-            @Param("phoneNumber") String phoneNumber,
-            @Param("gender") String gender,
-            @Param("birth") String birth,
-            @Param("regdate") Timestamp regdate){
+            String userId,
+            String password,
+            String name,
+            String nickName,
+            String phoneNumber,
+            Gender gender,
+            String birth,
+            Timestamp regdate){
         this.userId = userId;
         this.password = password;
         this.name = name;

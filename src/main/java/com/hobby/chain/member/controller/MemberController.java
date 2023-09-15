@@ -2,10 +2,11 @@ package com.hobby.chain.member.controller;
 
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.service.MemberService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -17,7 +18,8 @@ public class MemberController {
     }
 
     @PostMapping
-    public void memberSave(@RequestBody MemberDTO memberDTO){
+    @ResponseStatus(HttpStatus.CREATED)
+    public void memberSave(@RequestBody @Valid MemberDTO memberDTO){
         memberService.signUp(memberDTO);
     }
 
