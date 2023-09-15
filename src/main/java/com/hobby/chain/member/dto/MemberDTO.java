@@ -7,7 +7,6 @@ import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.sql.Date;
 
 @Getter
 @Builder

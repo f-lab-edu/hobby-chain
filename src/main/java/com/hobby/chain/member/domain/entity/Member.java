@@ -20,7 +20,6 @@ public class Member {
     private String birth;
     private Timestamp regdate;
 
-
     @Builder
     public Member(
             String userId,
