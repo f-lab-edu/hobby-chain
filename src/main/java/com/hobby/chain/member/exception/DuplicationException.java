@@ -1,5 +1,8 @@
 package com.hobby.chain.member.exception;
 
-public class DuplicationException extends RuntimeException{
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+@ResponseStatus(HttpStatus.CONFLICT)
+public class DuplicationException extends RuntimeException{
 }
