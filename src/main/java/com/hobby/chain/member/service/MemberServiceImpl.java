@@ -24,9 +24,9 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void signUp(MemberDTO memberDTO) {
-        boolean notExistMember = isNotExistMember(exist(memberDTO.getUserId()));
+        boolean existMember = exist(memberDTO.getUserId());
 
-        if(notExistMember) {
+        if(!existMember) {
             memberMapper.insertMember(Member.builder()
                             .userId(memberDTO.getUserId())
                             .password(passwordEncoder.encode(memberDTO.getPassword()))
@@ -42,13 +42,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public int exist(String userId) {
+    public boolean exist(String userId) {
         return memberMapper.exist(userId);
-    }
-
-    private boolean isNotExistMember(int isYn) {
-        if(isYn == 0)  return true;
-        return false;
     }
 
 }

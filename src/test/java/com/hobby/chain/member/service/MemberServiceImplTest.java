@@ -44,7 +44,7 @@ class MemberServiceImplTest {
 
         //when
         memberService.signUp(memberDTO);
-        int isYn = memberService.exist(memberDTO.getUserId());
+        boolean isYn = memberService.exist(memberDTO.getUserId());
 
         //then
         assertThat(isYn).isEqualTo(memberService.exist(memberDTO.getUserId()));
@@ -74,6 +74,7 @@ class MemberServiceImplTest {
     void 비밀번호_암호화(){
         String pwd = "xxxx";
         String encodedPwd = passwordEncoder.encode(pwd);
+        System.out.println("encodedPwd = " + encodedPwd);
     }
 
 }

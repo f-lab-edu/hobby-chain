@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface MemberService {
     public void signUp(MemberDTO memberDTO);
-    public int exist(String userId);
+    public boolean exist(String userId);
 }
