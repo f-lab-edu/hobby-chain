@@ -14,4 +14,14 @@
             VALUES (#{userId}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
     </insert>
 
+    <select id="findById" parameterType="String" resultType="com.hobby.chain.member.dto.MemberLogin">
+            SELECT user_id, password FROM member
+            WHERE user_id = #{userId}
+    </select>
+
+    <select id="getMemberInfo" parameterType="String" resultType="com.hobby.chain.member.dto.MemberDTO">
+            SELECT user_id, password, name, nickName, phoneNumber, gender, birth, regdate FROM member
+            WHERE user_id = #{userId}
+    </select>
+
 </mapper>

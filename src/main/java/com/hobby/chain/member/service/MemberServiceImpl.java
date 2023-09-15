@@ -3,7 +3,10 @@ package com.hobby.chain.member.service;
 import com.hobby.chain.member.domain.entity.Member;
 import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.dto.MemberLogin;
 import com.hobby.chain.member.exception.DuplicationException;
+import com.hobby.chain.member.exception.IncorrectPasswordException;
+import com.hobby.chain.member.exception.NotExistUserException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -46,4 +49,22 @@ public class MemberServiceImpl implements MemberService{
         return memberMapper.exist(userId);
     }
 
+    @Override
+    public boolean login(String userId, String password) {
+        MemberLogin loginInfo = memberMapper.findById(userId);
+
+        if(loginInfo == null){
+            throw new NotExistUserException();
+        } else if (!passwordEncoder.matches(password, loginInfo.getPassword())){
+            throw new IncorrectPasswordException();
+        }
+
+        return true;
+    }
+
+    @Override
+    public MemberDTO getMemberInfo(String userId) {
+        MemberDTO memberInfo = memberMapper.getMemberInfo(userId);
+        return memberInfo;
+    }
 }

@@ -1,11 +1,15 @@
 package com.hobby.chain.member.domain.mapper;
 
 import com.hobby.chain.member.domain.entity.Member;
+import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.dto.MemberLogin;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MemberMapper {
-    int exist(@Param("userId") String userId);
+    boolean exist(@Param("userId") String userId);
     void insertMember(Member member);
+    MemberLogin findById(String userId);
+    MemberDTO getMemberInfo(String userId);
 }
