@@ -1,21 +1,19 @@
 package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.Gender;
-import com.hobby.chain.member.Regex;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.exception.DuplicationException;
+import com.hobby.chain.member.exception.IncorrectPasswordException;
+import com.hobby.chain.member.exception.NotExistUserException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class MemberServiceImplTest {
@@ -44,10 +42,9 @@ class MemberServiceImplTest {
 
         //when
         memberService.signUp(memberDTO);
-        boolean isYn = memberService.exist(memberDTO.getUserId());
 
         //then
-        assertThat(isYn).isEqualTo(memberService.exist(memberDTO.getUserId()));
+        assertTrue(memberService.exist(memberDTO.getUserId()));
     }
 
     @Test
@@ -75,6 +72,47 @@ class MemberServiceImplTest {
         String pwd = "xxxx";
         String encodedPwd = passwordEncoder.encode(pwd);
         System.out.println("encodedPwd = " + encodedPwd);
+    }
+
+    @Test
+    void 로그인_성공_테스트(){
+        //given
+        String userId = "qpqp7374@gmail.com";
+        String pwd = "xxxx";
+
+        //when
+        boolean login = memberService.login(userId, pwd);
+
+        //then
+        assertTrue(login);
+    }
+
+    @Test
+    void 로그인_실패_아이디X(){
+        //given
+        String userId = "r2gards1@gmail.com";
+        String pwd = "xxxx";
+
+        //when
+        NotExistUserException ne = assertThrows(NotExistUserException.class,
+                () -> memberService.login(userId, pwd));
+
+        //then
+        assertThat(ne.getClass()).isEqualTo(NotExistUserException.class);
+    }
+
+    @Test
+    void 로그인_실패_비밀번호_일치X(){
+        //given
+        String userId = "qpqp7374@gmail.com";
+        String pwd = "xdre12";
+
+        //when
+        IncorrectPasswordException ie = assertThrows(IncorrectPasswordException.class,
+                () -> memberService.login(userId, pwd));
+
+        //then
+        assertThat(ie.getClass()).isEqualTo(IncorrectPasswordException.class);
     }
 
 }
