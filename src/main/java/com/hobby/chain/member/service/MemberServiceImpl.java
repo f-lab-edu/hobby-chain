@@ -6,6 +6,7 @@ import com.hobby.chain.member.dto.MemberLogin;
 import com.hobby.chain.member.exception.DuplicationException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
+import com.hobby.chain.util.SessionKey;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,17 +58,17 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
             throw new IncorrectPasswordException();
         }
 
-        session.setAttribute("member", userId);
+        session.setAttribute(SessionKey.MEMBER_IDX, loginInfo.getIdx());
     }
 
     @Override
     public void logout() {
-        session.removeAttribute("member");
+        session.removeAttribute(SessionKey.MEMBER_IDX);
     }
 
     @Override
     public String getLoginMemberId() {
-        Object userId = session.getAttribute("medmber");
+        Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
         if(userId != null){
             return String.valueOf(userId);
         } else {
