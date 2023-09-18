@@ -2,37 +2,52 @@ package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.Gender;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.dto.MemberLogin;
 import com.hobby.chain.member.exception.DuplicationException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpSession;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 @SpringBootTest
 class MemberServiceImplTest {
 
     private final MemberService memberService;
     private PasswordEncoder passwordEncoder;
+    private final MemberLoginService loginService;
+    @Mock
+    private MemberLogin memberLogin;
+    private HttpSession session = new MockHttpSession();
 
-    @Autowired
-    public MemberServiceImplTest(MemberService memberService, PasswordEncoder passwordEncoder) {
+    public MemberServiceImplTest(MemberService memberService, PasswordEncoder passwordEncoder, MemberLoginService loginService) {
         this.memberService = memberService;
         this.passwordEncoder = passwordEncoder;
+        this.loginService = loginService;
     }
+
+    @Autowired
+
 
     @Test
     @DisplayName("일반적인 회원 가입 성공")
     void 회원가입_성공(){
         //given
         MemberDTO memberDTO = MemberDTO.builder()
-                .userId("qpqp7374@gmail.com")
+                .userId("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -51,8 +66,18 @@ class MemberServiceImplTest {
     @DisplayName("중복 회원 가입 테스트")
     void 중복_회원_가입(){
         //given
-        MemberDTO memberDTO = MemberDTO.builder()
-                .userId("qpqp7374@gmail.com")
+        MemberDTO memberDTO1 = MemberDTO.builder()
+                .userId("qpqp7375@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO1);
+
+        MemberDTO memberDTO2 = MemberDTO.builder()
+                .userId("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -61,17 +86,10 @@ class MemberServiceImplTest {
                 .birth("20040227").build();
 
         //when
-        DuplicationException de = Assertions.assertThrows(DuplicationException.class, () -> memberService.signUp(memberDTO));
+        DuplicationException de = Assertions.assertThrows(DuplicationException.class, () -> memberService.signUp(memberDTO2));
 
         //then
         assertThat(de.getClass()).isEqualTo(DuplicationException.class);
-    }
-
-    @Test
-    void 비밀번호_암호화(){
-        String pwd = "xxxx";
-        String encodedPwd = passwordEncoder.encode(pwd);
-        System.out.println("encodedPwd = " + encodedPwd);
     }
 
     @Test
@@ -81,10 +99,10 @@ class MemberServiceImplTest {
         String pwd = "xxxx";
 
         //when
-        boolean login = memberService.login(userId, pwd);
+        loginService.login(userId, pwd);
 
         //then
-        assertTrue(login);
+        assertThat(memberLogin).isNotNull();
     }
 
     @Test
@@ -95,7 +113,7 @@ class MemberServiceImplTest {
 
         //when
         NotExistUserException ne = assertThrows(NotExistUserException.class,
-                () -> memberService.login(userId, pwd));
+                () -> loginService.login(userId, pwd));
 
         //then
         assertThat(ne.getClass()).isEqualTo(NotExistUserException.class);
@@ -109,7 +127,7 @@ class MemberServiceImplTest {
 
         //when
         IncorrectPasswordException ie = assertThrows(IncorrectPasswordException.class,
-                () -> memberService.login(userId, pwd));
+                () -> loginService.login(userId, pwd));
 
         //then
         assertThat(ie.getClass()).isEqualTo(IncorrectPasswordException.class);
