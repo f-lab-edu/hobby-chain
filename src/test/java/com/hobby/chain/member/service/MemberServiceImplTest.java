@@ -31,16 +31,13 @@ class MemberServiceImplTest {
     private final MemberLoginService loginService;
     @Mock
     private MemberLogin memberLogin;
-    private HttpSession session = new MockHttpSession();
 
+    @Autowired
     public MemberServiceImplTest(MemberService memberService, PasswordEncoder passwordEncoder, MemberLoginService loginService) {
         this.memberService = memberService;
         this.passwordEncoder = passwordEncoder;
         this.loginService = loginService;
     }
-
-    @Autowired
-
 
     @Test
     @DisplayName("일반적인 회원 가입 성공")
@@ -131,6 +128,15 @@ class MemberServiceImplTest {
 
         //then
         assertThat(ie.getClass()).isEqualTo(IncorrectPasswordException.class);
+    }
+
+    @Test
+    void 아이디_얻기_로그인X(){
+        //when
+        NullPointerException ne = assertThrows(NullPointerException.class, () -> loginService.getLoginMemberId());
+
+        //then
+        assertThat(ne.getClass()).isEqualTo(NullPointerException.class);
     }
 
 }
