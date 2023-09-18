@@ -9,7 +9,7 @@
             WHERE user_id = #{userId}) as Result
     </select>
 
-    <insert id="insertMember" parameterType="com.hobby.chain.member.domain.entity.Member">
+    <insert id="insertMember" parameterType="com.hobby.chain.member.dto.MemberDTO">
         INSERT INTO member(user_id, password, name, nickName, phoneNumber, gender, birth, regdate)
             VALUES (#{userId}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
     </insert>
