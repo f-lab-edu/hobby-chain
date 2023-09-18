@@ -67,10 +67,11 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     public String getLoginMemberId() {
-        try {
-            return String.valueOf(session.getAttribute("medmber"));
-        } catch (NullPointerException ne){
-            throw new NullPointerException("비로그인 회원입니다.");
+        Object userId = session.getAttribute("medmber");
+        if(userId != null){
+            return String.valueOf(userId);
+        } else {
+            throw new NullPointerException();
         }
     }
 
