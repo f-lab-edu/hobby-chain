@@ -10,5 +10,5 @@ public interface MemberMapper {
     boolean exist(@Param("userId") String userId);
     void insertMember(MemberDTO memberDTO);
     MemberLogin findById(String userId);
-    MemberDTO getMemberInfo(String userId);
+    MemberDTO getMemberInfo(long userIdx);
 }

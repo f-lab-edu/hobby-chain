@@ -67,10 +67,10 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    public String getLoginMemberId() {
+    public long getLoginMemberIdx() {
         Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
         if(userId != null){
-            return String.valueOf(userId);
+            return (long) userId;
         } else {
             throw new NullPointerException();
         }
@@ -78,6 +78,6 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     public MemberDTO getMemberInfo() {
-        return memberMapper.getMemberInfo(getLoginMemberId());
+        return memberMapper.getMemberInfo(getLoginMemberIdx());
     }
 }

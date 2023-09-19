@@ -133,7 +133,7 @@ class MemberServiceImplTest {
     @Test
     void 아이디_얻기_로그인X(){
         //when
-        NullPointerException ne = assertThrows(NullPointerException.class, () -> loginService.getLoginMemberId());
+        NullPointerException ne = assertThrows(NullPointerException.class, () -> loginService.getLoginMemberIdx());
 
         //then
         assertThat(ne.getClass()).isEqualTo(NullPointerException.class);
