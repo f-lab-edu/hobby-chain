@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hobby.chain.post.domain.mapper.PostMapper">
+    <resultMap id="postWithImages" type="com.hobby.chain.post.dto.PostDTO">
+        <result property="userIdx" column="user_idx"/>
+        <result property="content" column="content"/>
+        <collection property="images" ofType="com.hobby.chain.post.dto.ImageDTO" resultMap="imageList"/>
+    </resultMap>
+
+    <resultMap id="imageList" type="com.hobby.chain.post.dto.ImageDTO">
+        <result property="postId" column="post_id"/>
+        <result property="imagePath" column="image_path"/>
+        <result property="fileSize" column="file_size"/>
+    </resultMap>
+
+    <insert id="insertPost" parameterType="com.hobby.chain.post.dto.PostDTO">
+        insert into post(user_idx, content, regdate)
+        values (#{userIdx}, #{content}, NOW())
+    </insert>
+
+    <insert id="insertImages" parameterType="com.hobby.chain.post.dto.ImageDTO">
+        insert into post_image(post_id, image_path, file_size)
+        values (#{postId}, #{imagePath}, #{fileSize})
+    </insert>
+
+    <select id="isExistsImage" parameterType="long" resultType="boolean">
+        SELECT EXISTS(
+            SELECT post_id
+            FROM post
+            WHERE post_id = #{postId})
+        as Result
+    </select>
+
+    <select id="getAllPost" resultType="postWithImages">
+        select p.content, p.regdate, i.image_path, i.file_size
+        from post as p
+        LEFT join post_image as i
+        on p.post_id = i.post_id
+    </select>
+
+    <select id="getPostWithImage" resultType="postWithImages">
+        select p.content, p.regdate, i.image_path, i.file_size
+        from post as p
+        LEFT join post_image as i
+        on p.post_id = i.post_id
+        where p.post_id = #{post_id}
+    </select>
+
+    <select id="getPostWithoutImage" resultType="com.hobby.chain.post.dto.PostDTO">
+        select content, regdate from post
+        where post_id = #{post_id}
+    </select>
+
+</mapper>
