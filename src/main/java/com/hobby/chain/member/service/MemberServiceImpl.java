@@ -72,7 +72,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         if(userId != null){
             return (long) userId;
         } else {
-            throw new NullPointerException();
+            throw new NullPointerException("로그인이 필요합니다.");
         }
     }
 
