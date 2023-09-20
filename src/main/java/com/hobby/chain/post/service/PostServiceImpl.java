@@ -19,7 +19,7 @@ public class PostServiceImpl implements PostService{
     public void uploadNewPost(long UserIdx, PostDTO postDTO) {
         mapper.insertPost(PostDTO.builder()
                 .userIdx(UserIdx)
-                .content(postDTO.getContent()).build());
+                .post_content(postDTO.getPost_content()).build());
 
         if(postDTO.getImages() != null){
             List<ImageDTO> images = postDTO.getImages();
@@ -30,7 +30,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostDTO getAllPost() {
+    public List<PostDTO> getAllPost() {
         return mapper.getAllPost();
     }
 
