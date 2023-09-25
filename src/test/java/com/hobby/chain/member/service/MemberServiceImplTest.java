@@ -2,22 +2,16 @@ package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.Gender;
 import com.hobby.chain.member.dto.MemberDTO;
-import com.hobby.chain.member.dto.MemberLogin;
 import com.hobby.chain.member.exception.DuplicationException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpSession;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,8 +23,6 @@ class MemberServiceImplTest {
     private final MemberService memberService;
     private PasswordEncoder passwordEncoder;
     private final MemberLoginService loginService;
-    @Mock
-    private MemberLogin memberLogin;
 
     @Autowired
     public MemberServiceImplTest(MemberService memberService, PasswordEncoder passwordEncoder, MemberLoginService loginService) {
@@ -44,7 +36,7 @@ class MemberServiceImplTest {
     void 회원가입_성공(){
         //given
         MemberDTO memberDTO = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7377@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -56,7 +48,7 @@ class MemberServiceImplTest {
         memberService.signUp(memberDTO);
 
         //then
-        assertTrue(memberService.exist(memberDTO.getUserId()));
+        assertTrue(memberService.exist(memberDTO.getEmail()));
     }
 
     @Test
@@ -64,7 +56,7 @@ class MemberServiceImplTest {
     void 중복_회원_가입(){
         //given
         MemberDTO memberDTO1 = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -74,7 +66,7 @@ class MemberServiceImplTest {
         memberService.signUp(memberDTO1);
 
         MemberDTO memberDTO2 = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -92,20 +84,40 @@ class MemberServiceImplTest {
     @Test
     void 로그인_성공_테스트(){
         //given
-        String userId = "qpqp7374@gmail.com";
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email("qpqp7377@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO);
+
+        String userId = "qpqp7377@gmail.com";
         String pwd = "xxxx";
 
         //when
         loginService.login(userId, pwd);
 
         //then
-        assertThat(memberLogin).isNotNull();
+        assertThat(userId).isEqualTo(memberService.getMemberInfo().getEmail());
     }
 
     @Test
     void 로그인_실패_아이디X(){
         //given
-        String userId = "r2gards1@gmail.com";
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email("r2gards1@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO);
+
+        String userId = "r2gards2@gmail.com";
         String pwd = "xxxx";
 
         //when
@@ -119,6 +131,16 @@ class MemberServiceImplTest {
     @Test
     void 로그인_실패_비밀번호_일치X(){
         //given
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email("qpqp7377@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO);
+
         String userId = "qpqp7374@gmail.com";
         String pwd = "xdre12";
 
@@ -131,7 +153,7 @@ class MemberServiceImplTest {
     }
 
     @Test
-    void 아이디_얻기_로그인X(){
+    void 아이디_얻기_로그인X() {
         //when
         NullPointerException ne = assertThrows(NullPointerException.class, () -> loginService.getLoginMemberIdx());
 
