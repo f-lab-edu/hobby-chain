@@ -12,7 +12,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 public class MemberDTO {
     @Pattern(regexp = Regex.REGEX_USER_ID, message = "이메일 형식이 올바르지 않습니다.")
-    private String userId;
+    private String email;
 
     @Pattern(regexp = Regex.REGEX_PASSWORD, message = "영문, 숫자, 특수문자를 사용하여 6~15자리를 입력해 주세요.")
     private String password;
@@ -32,14 +32,14 @@ public class MemberDTO {
     @Pattern(regexp = Regex.REGEX_BIRTH, message = "생일 형식이 올바르지 않습니다.")
     private String birth;
 
-    public MemberDTO(String userId,
+    public MemberDTO(String email,
                      String password,
                      String name,
                      String nickName,
                      String phoneNumber,
                      Gender gender,
                      String birth) {
-        this.userId = userId;
+        this.email = email;
         this.password = password;
         this.name = name;
         this.nickName = nickName;

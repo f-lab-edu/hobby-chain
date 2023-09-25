@@ -24,7 +24,7 @@ class MemberLoginTest {
     void 정상_테스트(){
         //given
         MemberLogin memberLogin = MemberLogin.builder()
-                .userId("qpqp7371@gmail.com")
+                .email("qpqp7371@gmail.com")
                 .password("xsdf12*").build();
 
         //when
@@ -37,7 +37,7 @@ class MemberLoginTest {
     void 빈칸_테스트(){
         //given
         MemberLogin memberLogin = MemberLogin.builder()
-                .userId("")
+                .email("")
                 .password(" ").build();
 
         //when

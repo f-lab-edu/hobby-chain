@@ -4,23 +4,23 @@
 
     <select id="exist" parameterType="String" resultType="boolean">
         SELECT EXISTS(
-            SELECT user_id
+            SELECT email
             FROM member
-            WHERE user_id = #{userId}) as Result
+            WHERE email = #{email}) as Result
     </select>
 
     <insert id="insertMember" parameterType="com.hobby.chain.member.dto.MemberDTO">
-        INSERT INTO member(user_id, password, name, nickName, phoneNumber, gender, birth, regdate)
-            VALUES (#{userId}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
+        INSERT INTO member(email, password, name, nickName, phoneNumber, gender, birth, regdate)
+            VALUES (#{email}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
     </insert>
 
     <select id="findById" parameterType="String" resultType="com.hobby.chain.member.dto.MemberLogin">
-            SELECT idx, user_id, password FROM member
-            WHERE user_id = #{userId}
+            SELECT user_id, email, password FROM member
+            WHERE email = #{email}
     </select>
 
-    <select id="getMemberInfo" parameterType="String" resultType="com.hobby.chain.member.dto.MemberDTO">
-            SELECT user_id, password, name, nickName, phoneNumber, gender, birth, regdate FROM member
+    <select id="getMemberInfo" parameterType="long" resultType="com.hobby.chain.member.dto.MemberDTO">
+            SELECT email, password, name, nickName, phoneNumber, gender, birth, regdate FROM member
             WHERE user_id = #{userId}
     </select>
 

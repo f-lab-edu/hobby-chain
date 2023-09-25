@@ -29,7 +29,7 @@ public class MemberController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public void login(@RequestBody MemberLogin memberLogin){
-        loginService.login(memberLogin.getUserId(), memberLogin.getPassword());
+        loginService.login(memberLogin.getEmail(), memberLogin.getPassword());
     }
 
     @PostMapping("/logout")

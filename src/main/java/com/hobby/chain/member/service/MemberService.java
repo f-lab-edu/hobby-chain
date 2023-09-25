@@ -9,6 +9,6 @@ import java.util.Map;
 
 public interface MemberService {
     public void signUp(MemberDTO memberDTO);
-    public boolean exist(String userId);
+    public boolean exist(String email);
     public MemberDTO getMemberInfo();
 }
