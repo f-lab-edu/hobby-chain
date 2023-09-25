@@ -13,8 +13,8 @@ import java.sql.Timestamp;
 @Builder
 @AllArgsConstructor
 public class Member {
-    private long idx;
-    private String userId; //이메일
+    private long userId;
+    private String email;
     private String password;
     private String name;
     private String nickName;

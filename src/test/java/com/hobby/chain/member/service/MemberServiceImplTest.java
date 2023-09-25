@@ -44,7 +44,7 @@ class MemberServiceImplTest {
     void 회원가입_성공(){
         //given
         MemberDTO memberDTO = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7377@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -56,7 +56,7 @@ class MemberServiceImplTest {
         memberService.signUp(memberDTO);
 
         //then
-        assertTrue(memberService.exist(memberDTO.getUserId()));
+        assertTrue(memberService.exist(memberDTO.getEmail()));
     }
 
     @Test
@@ -64,7 +64,7 @@ class MemberServiceImplTest {
     void 중복_회원_가입(){
         //given
         MemberDTO memberDTO1 = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -74,7 +74,7 @@ class MemberServiceImplTest {
         memberService.signUp(memberDTO1);
 
         MemberDTO memberDTO2 = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -94,6 +94,7 @@ class MemberServiceImplTest {
         //given
         String userId = "qpqp7374@gmail.com";
         String pwd = "xxxx";
+        System.out.println("memberLogin = " + memberLogin);
 
         //when
         loginService.login(userId, pwd);
@@ -131,7 +132,7 @@ class MemberServiceImplTest {
     }
 
     @Test
-    void 아이디_얻기_로그인X(){
+    void 아이디_얻기_로그인X() {
         //when
         NullPointerException ne = assertThrows(NullPointerException.class, () -> loginService.getLoginMemberIdx());
 

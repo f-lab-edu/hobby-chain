@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MemberMapper {
-    boolean exist(@Param("userId") String userId);
+    boolean exist(@Param("email") String email);
     void insertMember(MemberDTO memberDTO);
-    MemberLogin findById(String userId);
-    MemberDTO getMemberInfo(long userIdx);
+    MemberLogin findById(String email);
+    MemberDTO getMemberInfo(long userId);
 }

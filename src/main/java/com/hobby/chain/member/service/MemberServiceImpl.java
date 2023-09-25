@@ -26,11 +26,11 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     public void signUp(MemberDTO memberDTO) {
-        boolean existMember = exist(memberDTO.getUserId());
+        boolean existMember = exist(memberDTO.getEmail());
 
         if(!existMember) {
             memberMapper.insertMember(MemberDTO.builder()
-                            .userId(memberDTO.getUserId())
+                            .email(memberDTO.getEmail())
                             .password(passwordEncoder.encode(memberDTO.getPassword()))
                             .name(memberDTO.getName())
                             .nickName(memberDTO.getNickName())
@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
             throw new IncorrectPasswordException();
         }
 
-        session.setAttribute(SessionKey.MEMBER_IDX, loginInfo.getIdx());
+        session.setAttribute(SessionKey.MEMBER_IDX, loginInfo.getUserId());
     }
 
     @Override
