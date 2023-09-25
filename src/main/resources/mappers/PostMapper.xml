@@ -4,7 +4,7 @@
     <resultMap id="postWithImages" type="com.hobby.chain.post.dto.PostDTO">
         <id property="postId" column="post_id"/>
         <result property="userIdx" column="user_idx"/>
-        <result property="post_content" column="post_content" javaType="String"/>
+        <result property="postContent" column="post_content" javaType="String"/>
         <collection property="images" ofType="imageList" resultMap="imageList"/>
     </resultMap>
 
@@ -16,7 +16,7 @@
 
     <insert id="insertPost" parameterType="com.hobby.chain.post.dto.PostDTO">
         insert into post(user_idx, post_content, regdate)
-        values (#{userIdx}, #{post_content}, NOW())
+        values (#{userIdx}, #{postContent}, NOW())
     </insert>
 
     <insert id="insertImages" parameterType="com.hobby.chain.post.dto.ImageDTO">

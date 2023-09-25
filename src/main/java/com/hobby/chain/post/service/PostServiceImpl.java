@@ -19,7 +19,7 @@ public class PostServiceImpl implements PostService{
     public void uploadNewPost(long UserIdx, PostDTO postDTO) {
         mapper.insertPost(PostDTO.builder()
                 .userIdx(UserIdx)
-                .post_content(postDTO.getPost_content()).build());
+                .postContent(postDTO.getPostContent()).build());
 
         if(postDTO.getImages() != null){
             List<ImageDTO> images = postDTO.getImages();

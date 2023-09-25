@@ -58,7 +58,7 @@ class PostServiceImplTest {
         //given
         PostDTO postDTO = PostDTO.builder()
                 .userIdx(loginService.getLoginMemberIdx())
-                .post_content("테스트").build();
+                .postContent("테스트").build();
 
         //when
         service.uploadNewPost(postDTO.getUserIdx(), postDTO);

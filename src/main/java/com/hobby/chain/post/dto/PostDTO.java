@@ -15,7 +15,7 @@ import java.util.List;
 public class PostDTO {
     private long postId;
     private long userIdx;
-    private String post_content;
+    private String postContent;
     private List<ImageDTO> images;
     private Timestamp regdate;
 }
