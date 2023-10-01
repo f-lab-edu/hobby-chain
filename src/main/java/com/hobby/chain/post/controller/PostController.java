@@ -2,6 +2,7 @@ package com.hobby.chain.post.controller;
 
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.post.dto.PostDTO;
+import com.hobby.chain.post.dto.ResponsePost;
 import com.hobby.chain.post.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,8 @@ public class PostController {
     }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PostDTO> getPosts(){
-        return postService.getPosts();
+    public List<ResponsePost> getPosts(@RequestParam(defaultValue = "0") long currentSeq){
+        return postService.getPosts(currentSeq);
     }
 
     @GetMapping("/one")

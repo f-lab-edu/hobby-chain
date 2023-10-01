@@ -6,6 +6,7 @@ import com.hobby.chain.post.domain.mapper.FileMapper;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.dto.PostDTO;
+import com.hobby.chain.post.dto.ResponsePost;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +34,7 @@ public class PostServiceImpl implements PostService{
 
         long postId = mapper.getLatestId();
 
-        if (images != null){
+        if (images != null && !images.isEmpty()){
             if(images.size() == 1){
                 ImageDTO imageDTO = fileService.uploadFile(images.get(0), postId);
                 fileMapper.uploadImage(imageDTO);
@@ -45,11 +46,6 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<PostDTO> getPosts() {
-        return mapper.getAllPost();
-    }
-
-    @Override
     public PostDTO getPost(long postId) {
         boolean existsImage = mapper.isExistsImage(postId);
 
@@ -58,5 +54,15 @@ public class PostServiceImpl implements PostService{
         } else {
             return mapper.getPostWithoutImage(postId);
         }
+    }
+
+    @Override
+    public List<ResponsePost> getPosts(long currentSeq) {
+        long startIdx = mapper.getLatestId() - (currentSeq*15);
+        return mapper.getPosts(startIdx);
+    }
+
+    private long getTotalCount(){
+        return mapper.getTotalCount();
     }
 }

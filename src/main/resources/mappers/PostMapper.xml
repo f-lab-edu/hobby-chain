@@ -30,12 +30,15 @@
         as Result
     </select>
 
-    <select id="getAllPost" resultMap="postWithImages">
+    <select id="getPosts" parameterType="long" resultMap="postWithImages">
         select p.post_id, p.user_idx, p.post_content, p.regdate,
-               i.post_id , i.image_id, i. image_name,i.image_path, i.file_size
+               i.post_id , i.image_id, i.image_name, i.image_path, i.file_size
         from post as p
         LEFT join post_image as i
         on p.post_id = i.post_id
+        where p.post_id <![CDATA[<=]]> #{startIdx}
+        order by p.post_id desc
+        limit 15
     </select>
 
     <select id="getPostWithImage" resultMap="postWithImages">
@@ -57,6 +60,10 @@
 
     <select id="getLatestId" resultType="long">
         select post_id from post order by post_id desc limit 1
+    </select>
+
+    <select id="getTotalCount" resultType="long">
+        select count(*) as total from post
     </select>
 
 </mapper>
