@@ -11,7 +11,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +31,7 @@ class PostServiceImplTest {
 
     private PostService service;
     private MemberService memberService;
-    private MemberLoginService loginService;
+    private final MemberLoginService loginService;
 
     @Autowired
     public PostServiceImplTest(PostMapper postMapper, MemberMapper memberMapper, PostService service, MemberService memberService, MemberLoginService loginService) {
@@ -54,16 +60,40 @@ class PostServiceImplTest {
     }
 
     @Test
-    void 게시물_업로드_이미지X(){
+    void 게시물_업로드_이미지X() {
         //given
         PostDTO postDTO = PostDTO.builder()
                 .userIdx(loginService.getLoginMemberIdx())
                 .postContent("테스트").build();
 
         //when
-        service.uploadNewPost(postDTO.getUserIdx(), postDTO);
+        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
 
         //then
-        assertThat(postMapper.getAllPostWithoutImage()).isNotNull();
+        assertThat(postMapper.getAllPost()).isNotNull();
+    }
+
+    @Test
+    void 게시물_업로드_이미지O() throws Exception {
+        //given
+        PostDTO postDTO = PostDTO.builder()
+                .userIdx(loginService.getLoginMemberIdx())
+                .postContent("테스트").build();
+
+        MultipartFile file = new MockMultipartFile("image", "test.png", "image/png",
+                new FileInputStream("/Users/mac/Downloads/test.png"));
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(file);
+
+        //when
+        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", files);
+
+        //then
+        assertThat(postMapper.getAllPost()).isNotNull();
+    }
+
+    @Test
+    void t(){
+
     }
 }
