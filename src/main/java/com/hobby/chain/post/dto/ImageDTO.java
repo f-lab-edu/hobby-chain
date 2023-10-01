@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class ImageDTO {
     private long postId;
+    private String imageId;
+    private String imageName;
     private String imagePath;
     private long fileSize;
 }

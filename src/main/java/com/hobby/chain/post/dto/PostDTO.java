@@ -10,8 +10,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class PostDTO {
     private long postId;
     private long userIdx;
