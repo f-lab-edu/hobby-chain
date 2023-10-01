@@ -4,6 +4,7 @@ import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.dto.MemberLogin;
 import com.hobby.chain.member.exception.DuplicationException;
+import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.util.SessionKey;
@@ -72,7 +73,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         if(userId != null){
             return (long) userId;
         } else {
-            throw new NullPointerException();
+            throw new ForbiddenException();
         }
     }
 
