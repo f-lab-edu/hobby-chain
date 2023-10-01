@@ -15,7 +15,7 @@ public interface PostMapper {
     List<PostDTO> getAllPost();
     PostDTO getPostWithImage(long postId);
     PostDTO getPostWithoutImage(long postId);
-
     List<PostDTO> getAllPostWithoutImage();
+    long getLatestId();
 
 }
