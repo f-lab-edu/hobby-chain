@@ -7,6 +7,7 @@ import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.PostDTO;
+import com.hobby.chain.post.dto.ResponsePost;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,19 @@ class PostServiceImplTest {
     }
 
     @Test
-    void t(){
+    void 게시물_조회(){
+        //given
+        PostDTO postDTO = PostDTO.builder()
+                .userIdx(loginService.getLoginMemberIdx())
+                .postContent("테스트").build();
+        for (int i = 0; i < 20; i++){
+            service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
+        }
 
+        //when
+        List<ResponsePost> posts = service.getPosts(0);
+
+        //then
+        assertThat(posts.size()).isEqualTo(15);
     }
 }
