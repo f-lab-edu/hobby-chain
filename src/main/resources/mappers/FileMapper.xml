@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hobby.chain.post.domain.mapper.FileMapper">
+    <insert id="uploadImage" parameterType="com.hobby.chain.post.dto.ImageDTO">
+        insert into post_image(image_id, post_id, image_name, image_path, file_size)
+        values (#{imageId}, #{postId}, #{imageName}, #{imagePath}, #{fileSize})
+    </insert>
+
+    <insert id="uploadImages" parameterType="java.util.List">
+        insert into post_image(post_id, image_id, image_name, image_path, file_size)
+        values
+        <foreach collection="imageDTOS" item="dto" separator=",">
+            (
+            #{dto.postId},
+            #{dto.imageId},
+            #{dto.imageName},
+            #{dto.imagePath},
+            #{dto.fileSize}
+            )
+        </foreach>
+    </insert>
+</mapper>
