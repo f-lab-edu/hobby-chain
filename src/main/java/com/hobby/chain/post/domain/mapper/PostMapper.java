@@ -4,21 +4,22 @@ import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.dto.PostDTO;
 import com.hobby.chain.post.dto.ResponsePost;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface PostMapper {
-    void insertPost(PostDTO postDTO);
-    void insertImages(ImageDTO imageDTO);
+    void insertPost(@Param("userId") long userId, @Param("postContent") String postContent);
+    boolean isExistsPost(long postId);
     boolean isExistsImage(long postId);
-    boolean isExistsPost(long memberIdx);
-    List<PostDTO> getAllPost();
+    List<ResponsePost> getAllPost();
     List<ResponsePost> getPosts(long startIdx);
-    PostDTO getPostWithImage(long postId);
-    PostDTO getPostWithoutImage(long postId);
-    List<PostDTO> getAllPostWithoutImage();
+    ResponsePost getPost(long postId);
     long getLatestId();
     long getTotalCount();
+    boolean isAuthorizedOnPost(@Param("userId") long userId, @Param("postId") long postId);
+    void updatePost(@Param("postContent") String content, @Param("postId") long postId);
+    void deletePost(long postId);
 
 }
