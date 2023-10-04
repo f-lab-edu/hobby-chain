@@ -3,16 +3,19 @@ package com.hobby.chain.post.service;
 import com.hobby.chain.member.Gender;
 import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.PostDTO;
 import com.hobby.chain.post.dto.ResponsePost;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,16 +31,14 @@ import static org.mockito.Mockito.*;
 @Transactional
 class PostServiceImplTest {
     private PostMapper postMapper;
-    private MemberMapper memberMapper;
 
     private PostService service;
     private MemberService memberService;
     private final MemberLoginService loginService;
 
     @Autowired
-    public PostServiceImplTest(PostMapper postMapper, MemberMapper memberMapper, PostService service, MemberService memberService, MemberLoginService loginService) {
+    public PostServiceImplTest(PostMapper postMapper, PostService service, MemberService memberService, MemberLoginService loginService) {
         this.postMapper = postMapper;
-        this.memberMapper = memberMapper;
         this.service = service;
         this.memberService = memberService;
         this.loginService = loginService;
@@ -64,11 +65,11 @@ class PostServiceImplTest {
     void 게시물_업로드_이미지X() {
         //given
         PostDTO postDTO = PostDTO.builder()
-                .userIdx(loginService.getLoginMemberIdx())
+                .userId(loginService.getLoginMemberIdx())
                 .postContent("테스트").build();
 
         //when
-        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
+        service.uploadNewPost(loginService.getLoginMemberIdx(), postDTO.getPostContent(), null);
 
         //then
         assertThat(postMapper.getAllPost()).isNotNull();
@@ -78,7 +79,7 @@ class PostServiceImplTest {
     void 게시물_업로드_이미지O() throws Exception {
         //given
         PostDTO postDTO = PostDTO.builder()
-                .userIdx(loginService.getLoginMemberIdx())
+                .userId(loginService.getLoginMemberIdx())
                 .postContent("테스트").build();
 
         MultipartFile file = new MockMultipartFile("image", "test.png", "image/png",
@@ -96,9 +97,6 @@ class PostServiceImplTest {
     @Test
     void 게시물_조회(){
         //given
-        PostDTO postDTO = PostDTO.builder()
-                .userIdx(loginService.getLoginMemberIdx())
-                .postContent("테스트").build();
         for (int i = 0; i < 20; i++){
             service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
         }
@@ -108,5 +106,56 @@ class PostServiceImplTest {
 
         //then
         assertThat(posts.size()).isEqualTo(15);
+    }
+
+    @Test
+    void 게시물_수정_권한O(){
+        //given
+        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
+
+        //when
+        service.updatePost(loginService.getLoginMemberIdx(), postMapper.getLatestId(), "test");
+        ResponsePost post = service.getPost(postMapper.getLatestId());
+
+        //then
+        assertThat(post.getPostContent()).isEqualTo("test");
+    }
+
+    @Test
+    void 게시물_수정_권한X(){
+        //given
+        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
+
+        //when
+        ForbiddenException fe = assertThrows(ForbiddenException.class,
+                () -> service.updatePost(0, postMapper.getLatestId(), "test"));
+
+        //then
+        assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);
+    }
+
+    @Test
+    void 게시물_삭제_권한O(){
+        //given
+        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
+
+        //when
+        service.deletePost(loginService.getLoginMemberIdx(), postMapper.getLatestId());
+
+        //then
+        assertThat(postMapper.getTotalCount()).isEqualTo(0);
+    }
+
+    @Test
+    void 게시물_삭제_권한X(){
+        //given
+        service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", null);
+
+        //when
+        ForbiddenException fe = assertThrows(ForbiddenException.class,
+                () -> service.deletePost(0, postMapper.getLatestId()));
+
+        //then
+        assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);
     }
 }
