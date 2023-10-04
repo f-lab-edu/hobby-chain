@@ -9,4 +9,5 @@ import java.util.List;
 public interface FileMapper {
     public void uploadImage(ImageDTO imageDTO);
     public void uploadImages(List<ImageDTO> imageDTOS);
+    public void deleteImages(long postId);
 }

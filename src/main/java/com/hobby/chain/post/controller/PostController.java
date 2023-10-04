@@ -34,10 +34,20 @@ public class PostController {
         return postService.getPosts(currentSeq);
     }
 
-    @GetMapping("/one")
+    @GetMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    public PostDTO getPost(){
-        return postService.getPost(loginService.getLoginMemberIdx());
+    public ResponsePost getPost(@PathVariable long postId){
+        return postService.getPost(postId);
+    }
+
+    @PutMapping("/{postId}")
+    public void updatePost(@PathVariable long postId, @RequestParam String content){
+        postService.updatePost(loginService.getLoginMemberIdx(), postId, content);
+    }
+
+    @DeleteMapping("/{postId}")
+    public void deletePost(@PathVariable long postId){
+        postService.deletePost(loginService.getLoginMemberIdx(), postId);
     }
 
 }

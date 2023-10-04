@@ -1,12 +1,11 @@
 package com.hobby.chain.post.service;
 
 import com.hobby.chain.member.exception.ForbiddenException;
-import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.post.domain.mapper.FileMapper;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.ImageDTO;
-import com.hobby.chain.post.dto.PostDTO;
 import com.hobby.chain.post.dto.ResponsePost;
+import com.hobby.chain.post.exception.NotExistsPost;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,9 +27,7 @@ public class PostServiceImpl implements PostService{
     public void uploadNewPost(long userId, String content, List<MultipartFile> images) {
         if (userId == 0) throw new ForbiddenException();
 
-        mapper.insertPost(PostDTO.builder()
-                .userIdx(userId)
-                .postContent(content).build());
+        mapper.insertPost(userId, content);
 
         long postId = mapper.getLatestId();
 
@@ -46,13 +43,13 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostDTO getPost(long postId) {
-        boolean existsImage = mapper.isExistsImage(postId);
+    public ResponsePost getPost(long postId) {
+        boolean isExistsPost = mapper.isExistsPost(postId);
 
-        if(existsImage){
-            return mapper.getPostWithImage(postId);
+        if(isExistsPost) {
+            return mapper.getPost(postId);
         } else {
-            return mapper.getPostWithoutImage(postId);
+            throw new NotExistsPost("게시물이 존재하지 않습니다.");
         }
     }
 
@@ -60,6 +57,29 @@ public class PostServiceImpl implements PostService{
     public List<ResponsePost> getPosts(long currentSeq) {
         long startIdx = mapper.getLatestId() - (currentSeq*15);
         return mapper.getPosts(startIdx);
+    }
+
+    @Override
+    public void updatePost(long userId, long postId, String content) {
+        boolean authorizedOnPost = mapper.isAuthorizedOnPost(userId, postId);
+        if(authorizedOnPost){
+            mapper.updatePost(content, postId);
+        } else{
+            throw new ForbiddenException("게시물을 수정할 권한이 없습니다.");
+        }
+    }
+
+    @Override
+    public void deletePost(long userId, long postId) {
+        boolean authorizedOnPost = mapper.isAuthorizedOnPost(userId, postId);
+        if(authorizedOnPost){
+            if(mapper.isExistsImage(postId)){
+                fileMapper.deleteImages(postId);
+            }
+            mapper.deletePost(postId);
+        } else{
+            throw new ForbiddenException("게시물을 삭제할 권한이 없습니다.");
+        }
     }
 
     private long getTotalCount(){
