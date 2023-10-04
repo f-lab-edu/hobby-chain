@@ -14,6 +14,6 @@ public class ResponsePost {
     private long postId;
     private long userIdx;
     private String postContent;
-    private List<ImageDTO> images;
     private Timestamp regdate;
+    private List<ImageDTO> images;
 }
