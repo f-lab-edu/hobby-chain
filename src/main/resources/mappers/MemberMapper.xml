@@ -6,12 +6,12 @@
         SELECT EXISTS(
             SELECT email
             FROM member
-            WHERE email = #{email}) as Result
+            WHERE email = #{email})
     </select>
 
     <insert id="insertMember" parameterType="com.hobby.chain.member.dto.MemberDTO">
         INSERT INTO member(email, password, name, nickName, phoneNumber, gender, birth, regdate)
-            VALUES (#{email}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
+        VALUES (#{email}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
     </insert>
 
     <select id="findById" parameterType="String" resultType="com.hobby.chain.member.dto.MemberLogin">
@@ -23,5 +23,15 @@
             SELECT email, name, nickName, phoneNumber, gender, birth, regdate FROM member
             WHERE user_id = #{userId}
     </select>
+
+    <update id="updateMemberInfo" parameterType="com.hobby.chain.member.dto.MemberInfo">
+        update member
+        set nickName = #{nickName}, phoneNumber = #{phoneNumber}, gender = #{gender}, birth = #{birth}
+        where user_id = #{userId}
+    </update>
+    
+    <delete id="deleteMember" parameterType="long">
+        delete from member where user_id = #{userId}
+    </delete>
 
 </mapper>

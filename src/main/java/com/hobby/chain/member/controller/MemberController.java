@@ -3,6 +3,7 @@ package com.hobby.chain.member.controller;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.MemberLogin;
+import com.hobby.chain.member.dto.UpdateRequestInfo;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import org.springframework.http.HttpStatus;
@@ -41,5 +42,15 @@ public class MemberController {
     @GetMapping("/me")
     public MemberInfo getMemberInfo(){
         return memberService.getMemberInfo();
+    }
+
+    @PutMapping("/edit")
+    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo){
+        memberService.updateMemberInfo(requestInfo);
+    }
+
+    @DeleteMapping
+    public void deleteMember(){
+        memberService.deleteMember();
     }
 }
