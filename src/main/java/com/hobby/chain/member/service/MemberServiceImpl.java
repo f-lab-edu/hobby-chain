@@ -2,6 +2,7 @@ package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.MemberLogin;
 import com.hobby.chain.member.exception.DuplicationException;
 import com.hobby.chain.member.exception.ForbiddenException;
@@ -78,7 +79,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    public MemberDTO getMemberInfo() {
+    public MemberInfo getMemberInfo() {
         return memberMapper.getMemberInfo(getLoginMemberIdx());
     }
 }
