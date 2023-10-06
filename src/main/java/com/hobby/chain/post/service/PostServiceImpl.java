@@ -5,8 +5,10 @@ import com.hobby.chain.post.domain.mapper.FileMapper;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.dto.ResponsePost;
-import com.hobby.chain.post.exception.NotExistsPost;
+import com.hobby.chain.post.exception.NoExistsPost;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,21 +26,16 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void uploadNewPost(long userId, String content, List<MultipartFile> images) {
         if (userId == 0) throw new ForbiddenException();
-
         mapper.insertPost(userId, content);
 
         long postId = mapper.getLatestId();
 
         if (images != null && !images.isEmpty()){
-            if(images.size() == 1){
-                ImageDTO imageDTO = fileService.uploadFile(images.get(0), postId);
-                fileMapper.uploadImage(imageDTO);
-            } else {
-                List<ImageDTO> imageDTOS = fileService.uploadFiles(images, postId);
-                fileMapper.uploadImages(imageDTOS);
-            }
+            List<ImageDTO> imageDTOS = fileService.uploadFiles(images, postId);
+            fileMapper.uploadImages(imageDTOS);
         }
     }
 
@@ -49,7 +46,7 @@ public class PostServiceImpl implements PostService{
         if(isExistsPost) {
             return mapper.getPost(postId);
         } else {
-            throw new NotExistsPost("게시물이 존재하지 않습니다.");
+            throw new NoExistsPost("게시물이 존재하지 않습니다.");
         }
     }
 

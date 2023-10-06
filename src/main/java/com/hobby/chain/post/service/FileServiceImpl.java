@@ -5,6 +5,7 @@ import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.exception.FileUploadFailException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,12 +20,7 @@ public class FileServiceImpl implements FileService{
     private String fileDir;
 
     @Override
-    public ImageDTO uploadFile(MultipartFile file, long postId) {
-        return createImageDTO(file, postId);
-    }
-
-    @Override
-    public List<ImageDTO> uploadFiles(List<MultipartFile> files, long postId){
+    public List<ImageDTO> uploadFiles(List<MultipartFile> files, long postId) throws FileUploadFailException {
          return files.stream().map(file -> createImageDTO(file, postId)).collect(Collectors.toList());
     }
 
