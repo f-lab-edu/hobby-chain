@@ -2,8 +2,11 @@ package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.MemberLogin;
+import com.hobby.chain.member.dto.UpdateRequestInfo;
 import com.hobby.chain.member.exception.DuplicationException;
+import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.util.SessionKey;
@@ -26,11 +29,11 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     public void signUp(MemberDTO memberDTO) {
-        boolean existMember = exist(memberDTO.getUserId());
+        boolean existMember = exist(memberDTO.getEmail());
 
         if(!existMember) {
             memberMapper.insertMember(MemberDTO.builder()
-                            .userId(memberDTO.getUserId())
+                            .email(memberDTO.getEmail())
                             .password(passwordEncoder.encode(memberDTO.getPassword()))
                             .name(memberDTO.getName())
                             .nickName(memberDTO.getNickName())
@@ -58,7 +61,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
             throw new IncorrectPasswordException();
         }
 
-        session.setAttribute(SessionKey.MEMBER_IDX, loginInfo.getIdx());
+        session.setAttribute(SessionKey.MEMBER_IDX, loginInfo.getUserId());
     }
 
     @Override
@@ -67,17 +70,36 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    public String getLoginMemberId() {
+    public long getLoginMemberIdx() {
         Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
         if(userId != null){
-            return String.valueOf(userId);
+            return (long) userId;
         } else {
-            throw new NullPointerException();
+            throw new ForbiddenException();
         }
     }
 
     @Override
-    public MemberDTO getMemberInfo() {
-        return memberMapper.getMemberInfo(getLoginMemberId());
+    public MemberInfo getMemberInfo() {
+        return memberMapper.getMemberInfo(getLoginMemberIdx());
+    }
+
+    @Override
+    public void updateMemberInfo(UpdateRequestInfo requestInfo){
+        MemberInfo memberInfo = MemberInfo.builder().
+                userId(getLoginMemberIdx())
+                .nickName(requestInfo.getNickName())
+                .phoneNumber(requestInfo.getPhoneNumber())
+                .gender(requestInfo.getGender())
+                .birth(requestInfo.getBirth())
+                .build();
+
+        memberMapper.updateMemberInfo(memberInfo);
+    }
+
+    @Override
+    public void deleteMember() {
+        memberMapper.deleteMember(getLoginMemberIdx());
+        logout();
     }
 }

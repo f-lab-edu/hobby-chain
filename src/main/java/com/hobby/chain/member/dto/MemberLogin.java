@@ -10,9 +10,9 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 public class MemberLogin {
-    private long idx;
+    private long userId;
     @NotBlank(message = "ID를 입력해 주세요.")
-    private String userId;
+    private String email;
 
     @NotBlank(message = "비밀번호를 입력해 주세요.")
     private String password;

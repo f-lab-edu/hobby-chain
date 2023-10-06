@@ -2,22 +2,18 @@ package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.Gender;
 import com.hobby.chain.member.dto.MemberDTO;
-import com.hobby.chain.member.dto.MemberLogin;
+import com.hobby.chain.member.dto.MemberInfo;
+import com.hobby.chain.member.dto.UpdateRequestInfo;
 import com.hobby.chain.member.exception.DuplicationException;
-import com.hobby.chain.member.exception.IncorrectPasswordException;
-import com.hobby.chain.member.exception.NotExistUserException;
+import com.hobby.chain.member.exception.ForbiddenException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
+import java.sql.Date;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,15 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberServiceImplTest {
 
     private final MemberService memberService;
-    private PasswordEncoder passwordEncoder;
     private final MemberLoginService loginService;
-    @Mock
-    private MemberLogin memberLogin;
 
     @Autowired
-    public MemberServiceImplTest(MemberService memberService, PasswordEncoder passwordEncoder, MemberLoginService loginService) {
+    public MemberServiceImplTest(MemberService memberService, MemberLoginService loginService) {
         this.memberService = memberService;
-        this.passwordEncoder = passwordEncoder;
         this.loginService = loginService;
     }
 
@@ -44,7 +36,7 @@ class MemberServiceImplTest {
     void 회원가입_성공(){
         //given
         MemberDTO memberDTO = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7377@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -56,7 +48,7 @@ class MemberServiceImplTest {
         memberService.signUp(memberDTO);
 
         //then
-        assertTrue(memberService.exist(memberDTO.getUserId()));
+        assertTrue(memberService.exist(memberDTO.getEmail()));
     }
 
     @Test
@@ -64,7 +56,7 @@ class MemberServiceImplTest {
     void 중복_회원_가입(){
         //given
         MemberDTO memberDTO1 = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -74,7 +66,7 @@ class MemberServiceImplTest {
         memberService.signUp(memberDTO1);
 
         MemberDTO memberDTO2 = MemberDTO.builder()
-                .userId("qpqp7375@gmail.com")
+                .email("qpqp7375@gmail.com")
                 .password("xxxx")
                 .name("정서현")
                 .nickName("서현")
@@ -90,53 +82,74 @@ class MemberServiceImplTest {
     }
 
     @Test
-    void 로그인_성공_테스트(){
+    void 회원_정보_조회(){
         //given
-        String userId = "qpqp7374@gmail.com";
-        String pwd = "xxxx";
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email("qpqp7371@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO);
+        loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
 
         //when
-        loginService.login(userId, pwd);
+        MemberInfo memberInfo = memberService.getMemberInfo();
 
         //then
-        assertThat(memberLogin).isNotNull();
+        assertThat(memberDTO.getEmail()).isEqualTo(memberInfo.getEmail());
     }
 
     @Test
-    void 로그인_실패_아이디X(){
+    void 회원_정보_수정(){
         //given
-        String userId = "r2gards1@gmail.com";
-        String pwd = "xxxx";
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email("qpqp7371@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO);
+        loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
+
+        UpdateRequestInfo requestInfo = UpdateRequestInfo.builder()
+                .nickName("tjgus")
+                .phoneNumber("010-0000-0000")
+                .gender(Gender.F)
+                .birth(Date.valueOf("2004-02-27")).build();
 
         //when
-        NotExistUserException ne = assertThrows(NotExistUserException.class,
-                () -> loginService.login(userId, pwd));
+        memberService.updateMemberInfo(requestInfo);
 
         //then
-        assertThat(ne.getClass()).isEqualTo(NotExistUserException.class);
+        MemberInfo memberInfo = memberService.getMemberInfo();
+        assertThat(memberInfo.getNickName()).isEqualTo(requestInfo.getNickName());
     }
 
     @Test
-    void 로그인_실패_비밀번호_일치X(){
+    void 회원_탈퇴(){
         //given
-        String userId = "qpqp7374@gmail.com";
-        String pwd = "xdre12";
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email("qpqp7371@gmail.com")
+                .password("xxxx")
+                .name("정서현")
+                .nickName("서현")
+                .phoneNumber("010-4600-4123")
+                .gender(Gender.M)
+                .birth("20040227").build();
+        memberService.signUp(memberDTO);
+        loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
 
         //when
-        IncorrectPasswordException ie = assertThrows(IncorrectPasswordException.class,
-                () -> loginService.login(userId, pwd));
+        memberService.deleteMember();
+        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> memberService.getMemberInfo());
 
         //then
-        assertThat(ie.getClass()).isEqualTo(IncorrectPasswordException.class);
-    }
-
-    @Test
-    void 아이디_얻기_로그인X(){
-        //when
-        NullPointerException ne = assertThrows(NullPointerException.class, () -> loginService.getLoginMemberId());
-
-        //then
-        assertThat(ne.getClass()).isEqualTo(NullPointerException.class);
+        assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);
     }
 
 }
