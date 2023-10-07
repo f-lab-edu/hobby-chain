@@ -9,6 +9,7 @@ import com.hobby.chain.post.exception.NoExistsPost;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class PostServiceImpl implements PostService{
 
         long postId = mapper.getLatestId();
 
-        if (images != null && !images.isEmpty()){
+        if (CollectionUtils.isEmpty(images)){
             List<ImageDTO> imageDTOS = fileService.uploadFiles(images, postId);
             fileMapper.uploadImages(imageDTOS);
         }
