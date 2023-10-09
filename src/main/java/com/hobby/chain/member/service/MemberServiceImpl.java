@@ -48,7 +48,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     public boolean exist(String userId) {
-        return memberMapper.exist(userId);
+        return memberMapper.isExistMemberByEmail(userId);
     }
 
     @Override
