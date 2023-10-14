@@ -17,11 +17,11 @@ public class FollowController {
 
     @PostMapping
     public void subscribeUser(@RequestParam("followeeId") long followee){
-        followService.subscribe(loginService.getLoginMemberIdx(), followee);
+        followService.subscribe(followee);
     }
 
     @DeleteMapping
     public void unsubscribe(@RequestParam("followeeId") long followee){
-        followService.unsubscribe(loginService.getLoginMemberIdx(), followee);
+        followService.unsubscribe(followee);
     }
 }

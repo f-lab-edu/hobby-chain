@@ -25,17 +25,18 @@ public class FollowServiceImpl implements FollowService{
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void subscribe(long follower, long followee) {
-        checkAndFollowOrUnfollow(follower, followee, true);
+    public void subscribe(long followee) {
+        checkAndFollowOrUnfollow(followee, true);
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void unsubscribe(long follower, long followee) {
-        checkAndFollowOrUnfollow(follower, followee, false);
+    public void unsubscribe(long followee) {
+        checkAndFollowOrUnfollow(followee, false);
     }
 
-    private void checkAndFollowOrUnfollow(long follower, long followee, boolean isSubscribe){
+    private void checkAndFollowOrUnfollow(long followee, boolean isSubscribe){
+        long follower = loginService.getLoginMemberIdx();
         loginCheck(follower);
 
         boolean existUser = memberService.isExistUser(followee);
