@@ -102,4 +102,9 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         memberMapper.deleteMember(getLoginMemberIdx());
         logout();
     }
+
+    @Override
+    public boolean isExistUser(long userId) {
+        return memberMapper.isExistMemberById(userId);
+    }
 }

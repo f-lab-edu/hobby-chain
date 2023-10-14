@@ -12,6 +12,7 @@ import java.util.Map;
 public interface MemberService {
     public void signUp(MemberDTO memberDTO);
     public boolean exist(String email);
+    public boolean isExistUser(long userId);
     public MemberInfo getMemberInfo();
     void updateMemberInfo(UpdateRequestInfo requestInfo);
     void deleteMember();

@@ -3,51 +3,54 @@ package com.hobby.chain.follow.service;
 import com.hobby.chain.follow.domain.mapper.FollowMapper;
 import com.hobby.chain.follow.exception.AlreadyFollowingException;
 import com.hobby.chain.follow.exception.NotFollowingUserException;
-import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.member.service.MemberLoginService;
+import com.hobby.chain.member.service.MemberService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FollowServiceImpl implements FollowService{
-    private final MemberMapper memberMapper;
     private final FollowMapper followMapper;
+    private final MemberService memberService;
     private final MemberLoginService loginService;
 
-    public FollowServiceImpl(MemberMapper memberMapper, FollowMapper followMapper, MemberLoginService loginService) {
-        this.memberMapper = memberMapper;
+    public FollowServiceImpl(FollowMapper followMapper, MemberService memberService, MemberLoginService loginService) {
         this.followMapper = followMapper;
+        this.memberService = memberService;
         this.loginService = loginService;
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void subscribe(long follower, long followee) {
+        checkAndFollowOrUnfollow(follower, followee, true);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void unsubscribe(long follower, long followee) {
+        checkAndFollowOrUnfollow(follower, followee, false);
+    }
+
+    private void checkAndFollowOrUnfollow(long follower, long followee, boolean isSubscribe){
         loginCheck(follower);
 
-        boolean existUser = isExistUser(followee);
+        boolean existUser = memberService.isExistUser(followee);
         boolean following = isFollowing(follower, followee);
 
-        if(existUser){
-            if(!following){
+        if(existUser) {
+            if (!following && isSubscribe) {
                 followMapper.insertFollow(follower, followee);
+            } else if (following && !isSubscribe) {
+                followMapper.deleteFollow(follower, followee);
             } else {
                 throw new AlreadyFollowingException();
             }
         } else {
             throw new NotExistUserException();
-        }
-    }
-
-    @Override
-    public void unsubscribe(long follower, long followee) {
-        loginCheck(follower);
-
-        boolean following = isFollowing(follower, followee);
-        if(following){
-            followMapper.deleteFollow(follower, followee);
-        } else {
-            throw new NotFollowingUserException();
         }
     }
 
@@ -63,7 +66,4 @@ public class FollowServiceImpl implements FollowService{
         }
     }
 
-    private boolean isExistUser(long followeeId){
-        return memberMapper.isExistMemberById(followeeId);
-    }
 }
