@@ -1,13 +1,16 @@
 package com.hobby.chain.post.service;
 
 import com.hobby.chain.member.exception.ForbiddenException;
+import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.post.domain.mapper.FileMapper;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.dto.ResponsePost;
+import com.hobby.chain.post.exception.FileUploadFailException;
 import com.hobby.chain.post.exception.NoExistsPost;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,25 +22,43 @@ public class PostServiceImpl implements PostService{
     private final PostMapper mapper;
     private final FileService fileService;
     private final FileMapper fileMapper;
+    private final MemberLoginService loginService;
 
-    public PostServiceImpl(PostMapper mapper, FileService fileService, FileMapper fileMapper) {
+    public PostServiceImpl(PostMapper mapper, FileService fileService, FileMapper fileMapper, MemberLoginService loginService) {
         this.mapper = mapper;
         this.fileService = fileService;
         this.fileMapper = fileMapper;
+        this.loginService = loginService;
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void uploadNewPost(long userId, String content, List<MultipartFile> images) {
-        if (userId == 0) throw new ForbiddenException();
-        mapper.insertPost(userId, content);
+        if (userId != loginService.getLoginMemberIdx()) throw new ForbiddenException();
 
-        long postId = mapper.getLatestId();
+        //첫 트랜잭션 - 포스트 업로드
+        long postId = insertPost(userId, content);
 
         if (CollectionUtils.isEmpty(images)){
-            List<ImageDTO> imageDTOS = fileService.uploadFiles(images, postId);
-            fileMapper.uploadImages(imageDTOS);
+            //두번째 트랜잭션 - 파일 업로드
+            uploadImages(images, postId);
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public long insertPost(long userId, String content){
+        mapper.insertPost(userId, content);
+        return mapper.getLatestId();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void uploadImages(List<MultipartFile> images, long postId) throws FileUploadFailException{
+        List<ImageDTO> imageDTOS = toDTOS(images, postId);
+        fileMapper.uploadImages(imageDTOS);
+    }
+
+    private List<ImageDTO> toDTOS(List<MultipartFile> images, long postId) throws FileUploadFailException {
+         return fileService.uploadFiles(images, postId);
     }
 
     @Override

@@ -21,7 +21,6 @@ public class FileServiceImpl implements FileService{
     private String fileDir;
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<ImageDTO> uploadFiles(List<MultipartFile> files, long postId) throws FileUploadFailException {
          return files.stream().map(file -> createImageDTO(file, postId)).collect(Collectors.toList());
     }
