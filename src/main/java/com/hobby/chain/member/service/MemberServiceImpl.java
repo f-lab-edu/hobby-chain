@@ -48,7 +48,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     public boolean exist(String userId) {
-        return memberMapper.exist(userId);
+        return memberMapper.isExistMemberByEmail(userId);
     }
 
     @Override
@@ -70,12 +70,12 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    public long getLoginMemberIdx() {
+    public long getLoginMemberIdx() throws ForbiddenException{
         Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
         if(userId != null){
             return (long) userId;
         } else {
-            throw new ForbiddenException();
+            throw new ForbiddenException("로그인이 필요한 기능입니다.");
         }
     }
 
@@ -101,5 +101,10 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     public void deleteMember() {
         memberMapper.deleteMember(getLoginMemberIdx());
         logout();
+    }
+
+    @Override
+    public boolean isExistUser(long userId) {
+        return memberMapper.isExistMemberById(userId);
     }
 }
