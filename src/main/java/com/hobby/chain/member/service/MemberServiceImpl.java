@@ -2,8 +2,11 @@ package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.MemberLogin;
+import com.hobby.chain.member.dto.UpdateRequestInfo;
 import com.hobby.chain.member.exception.DuplicationException;
+import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.util.SessionKey;
@@ -72,12 +75,31 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         if(userId != null){
             return (long) userId;
         } else {
-            throw new NullPointerException("로그인이 필요합니다.");
+            throw new ForbiddenException();
         }
     }
 
     @Override
-    public MemberDTO getMemberInfo() {
+    public MemberInfo getMemberInfo() {
         return memberMapper.getMemberInfo(getLoginMemberIdx());
+    }
+
+    @Override
+    public void updateMemberInfo(UpdateRequestInfo requestInfo){
+        MemberInfo memberInfo = MemberInfo.builder().
+                userId(getLoginMemberIdx())
+                .nickName(requestInfo.getNickName())
+                .phoneNumber(requestInfo.getPhoneNumber())
+                .gender(requestInfo.getGender())
+                .birth(requestInfo.getBirth())
+                .build();
+
+        memberMapper.updateMemberInfo(memberInfo);
+    }
+
+    @Override
+    public void deleteMember() {
+        memberMapper.deleteMember(getLoginMemberIdx());
+        logout();
     }
 }
