@@ -45,7 +45,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public boolean exist(String userId) {
-        return memberMapper.exist(userId);
+        return memberMapper.isExistMemberByEmail(userId);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         if(userId != null){
             return (long) userId;
         } else {
-            throw new ForbiddenException();
+            throw new ForbiddenException("로그인이 필요한 기능입니다.");
         }
     }
 
@@ -94,7 +94,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         memberMapper.deleteMember(getLoginMemberIdx());
         logout();
     }
-
+  
     private MemberDTO buildMemberDto(MemberDTO memberDTO){
         return MemberDTO.builder()
                 .email(memberDTO.getEmail())
@@ -117,4 +117,8 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
                 .build();
     }
 
+    @Override
+    public boolean isExistUser(long userId) {
+        return memberMapper.isExistMemberById(userId);
+    }
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hobby.chain.post.domain.mapper.PostMapper">
+    <resultMap id="postWithImages" type="com.hobby.chain.post.dto.ResponsePost">
+        <id property="postId" column="post_id" javaType="long"/>
+        <result property="userIdx" column="user_idx"/>
+        <result property="postContent" column="post_content" javaType="String"/>
+        <result property="regdate" column="regdate" javaType="java.sql.Timestamp"/>
+        <collection property="images" ofType="com.hobby.chain.post.dto.ImageDTO" resultMap="imagesMap"/>
+    </resultMap>
+
+    <resultMap id="imagesMap" type="com.hobby.chain.post.dto.ImageDTO">
+        <result property="postId" column="post_id" javaType="long"/>
+        <result property="imageId" column="image_id"/>
+        <result property="imageName" column="image_name"/>
+        <result property="imagePath" column="image_path"/>
+        <result property="fileSize" column="file_size"/>
+    </resultMap>
+
+    <insert id="insertPost" parameterType="com.hobby.chain.post.dto.PostDTO">
+        insert into post(user_id, post_content, regdate)
+        values (#{userId}, #{postContent}, NOW())
+    </insert>
+
+    <select id="isExistsPost" parameterType="long" resultType="boolean">
+        SELECT EXISTS(SELECT post_id FROM post
+            WHERE post_id = #{postId}) as Result
+    </select>
+
+    <select id="isExistsImage" parameterType="long" resultType="boolean">
+        SELECT EXISTS(SELECT post_id FROM post_image
+                      WHERE post_id = #{postId}) as Result
+    </select>
+
+
+    <select id="getPosts" parameterType="long" resultMap="postWithImages">
+        select p.post_id, p.user_id, p.post_content, p.regdate,
+               i.post_id , i.image_id, i.image_name, i.image_path, i.file_size
+        from post as p
+        LEFT join post_image as i
+        on p.post_id = i.post_id
+        where p.post_id <![CDATA[<=]]> #{startIdx}
+        order by p.post_id desc
+        limit 15
+    </select>
+
+    <select id="getPost" parameterType="long" resultMap="postWithImages">
+        select p.post_id, p.user_id, p.post_content, p.regdate, i.image_path, i.file_size
+        from post as p
+        LEFT join post_image as i
+        on p.post_id = i.post_id
+        where p.post_id = #{post_id}
+    </select>
+
+    <select id="getLatestId" resultType="long">
+        select post_id from post order by post_id desc limit 1
+    </select>
+
+    <select id="getTotalCount" resultType="long">
+        select count(*) as total from post
+    </select>
+
+    <select id="isAuthorizedOnPost" resultType="boolean">
+        SELECT EXISTS( SELECT post_id FROM post
+            WHERE post_id = #{postId} AND user_id = #{userId})
+    </select>
+    
+    <update id="updatePost">
+        update post set post_content = #{postContent}
+                    where post_id = #{postId}
+    </update>
+    
+    <delete id="deletePost" parameterType="long">
+        delete from post where post_id = #{postId}
+    </delete>
+
+</mapper>

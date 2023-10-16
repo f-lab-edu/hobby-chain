@@ -2,11 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hobby.chain.member.domain.mapper.MemberMapper">
 
-    <select id="exist" parameterType="String" resultType="boolean">
+    <select id="isExistMemberByEmail" parameterType="String" resultType="boolean">
         SELECT EXISTS(
             SELECT email
             FROM member
             WHERE email = #{email})
+    </select>
+
+    <select id="isExistMemberById" parameterType="long" resultType="boolean">
+        SELECT EXISTS(
+            SELECT user_id
+            FROM member
+            WHERE user_id = #{userId})
     </select>
 
     <insert id="insertMember" parameterType="com.hobby.chain.member.dto.MemberDTO">
@@ -18,7 +25,7 @@
             SELECT user_id, email, password FROM member
             WHERE email = #{email}
     </select>
-
+  
     <select id="getMemberInfo" parameterType="long" resultType="com.hobby.chain.member.dto.MemberInfo">
             SELECT email, name, nickName, phoneNumber, gender, birth, regdate FROM member
             WHERE user_id = #{userId}
