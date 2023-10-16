@@ -143,7 +143,7 @@ class MemberServiceImplTest {
                 .birth("20040227").build();
         memberService.signUp(memberDTO);
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
-
+      
         //when
         memberService.deleteMember();
         ForbiddenException fe = assertThrows(ForbiddenException.class, () -> memberService.getMemberInfo());

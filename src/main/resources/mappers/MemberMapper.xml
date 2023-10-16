@@ -18,7 +18,7 @@
             SELECT user_id, email, password FROM member
             WHERE email = #{email}
     </select>
-
+  
     <select id="getMemberInfo" parameterType="long" resultType="com.hobby.chain.member.dto.MemberInfo">
             SELECT email, name, nickName, phoneNumber, gender, birth, regdate FROM member
             WHERE user_id = #{userId}
