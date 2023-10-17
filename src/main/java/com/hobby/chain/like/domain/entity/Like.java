@@ -8,7 +8,6 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class Like {
-    private long likeId;
     private long postId;
     private long userId;
 }
