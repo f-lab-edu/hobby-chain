@@ -61,9 +61,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public ResponsePost getPost(long postId) {
-        boolean isExistsPost = mapper.isExistsPost(postId);
-
-        if(isExistsPost) {
+        if(isExistsPost(postId)) {
             return mapper.getPost(postId);
         } else {
             throw new NoExistException("게시물이 존재하지 않습니다.");
@@ -84,6 +82,11 @@ public class PostServiceImpl implements PostService{
         } else{
             throw new ForbiddenException("게시물을 수정할 권한이 없습니다.");
         }
+    }
+
+    @Override
+    public boolean isExistsPost(long postId) {
+        return mapper.isExistsPost(postId);
     }
 
     @Override

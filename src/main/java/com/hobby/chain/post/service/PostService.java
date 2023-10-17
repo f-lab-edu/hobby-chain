@@ -11,4 +11,5 @@ public interface PostService {
     public ResponsePost getPost(long postId);
     public void deletePost(long userId, long postId);
     void updatePost(long userId, long postId, String content);
+    boolean isExistsPost(long postId);
 }
