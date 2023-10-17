@@ -1,14 +1,15 @@
 package com.hobby.chain.post.service;
 
-import com.hobby.chain.post.domain.mapper.FileMapper;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.exception.FileUploadFailException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -17,31 +18,50 @@ import java.util.stream.Collectors;
 
 @Service
 public class FileServiceImpl implements FileService{
-    @Value("$hobby.chain.file.dir:")
-    private String fileDir;
+    @Value("${naver.objectStorage.bucketName}")
+    private String bucketName;
+
+    private final AmazonS3 awsS3Client;
+
+    public FileServiceImpl(AmazonS3 awsS3Client) {
+        this.awsS3Client = awsS3Client;
+    }
 
     @Override
     public List<ImageDTO> uploadFiles(List<MultipartFile> files, long postId) throws FileUploadFailException {
-         return files.stream().map(file -> createImageDTO(file, postId)).collect(Collectors.toList());
+         return files.stream()
+                 .map(file -> uploadAndToDto(file, postId))
+                 .collect(Collectors.toList());
     }
 
-    private ImageDTO createImageDTO(MultipartFile file, long postId){
-        //원래 파일명
+    private ImageDTO uploadAndToDto(MultipartFile file, long postId) throws FileUploadFailException {
         String fileName = file.getOriginalFilename();
-        //파일 이름
         String uuid = UUID.randomUUID().toString();
-        // 확장자 추출
-        String extension = fileName.substring(fileName.lastIndexOf("."));
-        // 파일을 불러올 때 사용할 파일 경로
-        String savedPath = fileDir + uuid + extension;
-        // 파일 사이즈
+        String extension = fileName != null ? fileName.substring(fileName.lastIndexOf(".")) : null;
+        String objectKey = uuid + extension;
         long fileSize = file.getSize();
 
-        try {
-                file.transferTo(new File(savedPath));
-                return ImageDTO.builder().imageId(uuid).imageName(fileName).fileSize(fileSize).imagePath(savedPath).build();
-            } catch (IOException e) {
-                throw new FileUploadFailException("파일 업로드에 실패했습니다.");
-            }
+        try{
+            byte[] fileData = file.getBytes();
+            uploadToBucket(objectKey, fileData);
+            return createImageDTO(uuid, fileName, fileSize, objectKey);
+        } catch (IOException e) {
+            throw new FileUploadFailException("버킷에 파일 업로드 중 실패하였습니다.");
         }
+        }
+
+    private void uploadToBucket(String objectKey, byte[] fileData){
+        awsS3Client.putObject(new PutObjectRequest(
+                bucketName, objectKey,
+                new ByteArrayInputStream(fileData), new ObjectMetadata()));
+    }
+
+    private ImageDTO createImageDTO(String uuid, String fileName, long fileSize, String objectKey) {
+        return ImageDTO.builder()
+                .imageId(uuid)
+                .imageName(fileName)
+                .fileSize(fileSize)
+                .imagePath(objectKey)
+                .build();
+    }
 }
