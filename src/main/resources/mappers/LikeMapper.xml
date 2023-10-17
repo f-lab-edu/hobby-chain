@@ -17,4 +17,9 @@
                 SELECT count(*) FROM post_like
                 WHERE post_id = #{postId} and user_id = #{userId})
     </select>
+    
+    <select id="getLikeByPostId" parameterType="long" resultType="int">
+        SELECT COUNT(user_id) from post_like
+        WHERE post_id = #{postId}
+    </select>
 </mapper>
