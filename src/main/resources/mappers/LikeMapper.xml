@@ -12,9 +12,9 @@
         AND user_id = #{userId}
     </delete>
 
-    <select id="isLike">
+    <select id="isLike" resultType="boolean">
             SELECT EXISTS(
-                SELECT count(*) FROM post_like
+                SELECT 1 FROM post_like
                 WHERE post_id = #{postId} and user_id = #{userId})
     </select>
     
