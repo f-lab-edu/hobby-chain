@@ -2,6 +2,7 @@ package com.hobby.chain.like.service;
 
 import com.hobby.chain.like.domain.mapper.LikeMapper;
 import com.hobby.chain.like.exception.AlreadyLikeException;
+import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
@@ -9,6 +10,7 @@ import com.hobby.chain.post.exception.NoExistsPost;
 import com.hobby.chain.post.service.PostService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -40,24 +42,32 @@ public class LikeServiceImpl implements LikeService{
         return likeMapper.getLikeByPostId(postId);
     }
 
-    private void checkAndLikeOrUnlike(long postId, boolean isLikeRequest){
-        long loginUser = loginService.getLoginMemberIdx();
-        loginService.loginCheck(loginUser);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void checkAndLikeOrUnlike(long postId, boolean isLikeRequest) {
+        long loginUser = loginCheck();
+        isExistsPost(postId);
 
-        boolean existsPost = postService.isExistsPost(postId);
         boolean isLike = isLike(postId, loginUser);
 
-        if (existsPost){
-            if (!isLike && isLikeRequest){
-                likeMapper.insertLike(loginUser, postId);
-            } else if (isLike && !isLikeRequest) {
-                likeMapper.deleteLike(loginUser, postId);
-            } else {
-                throw new AlreadyLikeException();
-            }
-        } else {
-            throw new NoExistsPost();
+        if (!isLike && !isLikeRequest) {
+            throw new ForbiddenException();
+        } else if (isLike && isLikeRequest) {
+            throw new AlreadyLikeException();
         }
+
+        if (isLikeRequest) {
+            likeMapper.insertLike(loginUser, postId);
+        } else {
+            likeMapper.deleteLike(loginUser, postId);
+        }
+    }
+
+    private long loginCheck() throws ForbiddenException{
+        return loginService.getLoginMemberIdx();
+    }
+
+    private void isExistsPost(long postId) throws NoExistsPost{
+        if(!postService.isExistsPost(postId)) throw new NoExistsPost();
     }
 
     private boolean isLike(long postId, long userId) {
