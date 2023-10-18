@@ -8,11 +8,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/follows")
 public class FollowController {
     private final FollowService followService;
-    private final MemberLoginService loginService;
 
-    public FollowController(FollowService followService, MemberLoginService loginService) {
+    public FollowController(FollowService followService) {
         this.followService = followService;
-        this.loginService = loginService;
     }
 
     @PostMapping
