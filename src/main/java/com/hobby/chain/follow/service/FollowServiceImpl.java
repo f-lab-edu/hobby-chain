@@ -9,6 +9,7 @@ import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -35,24 +36,32 @@ public class FollowServiceImpl implements FollowService{
         checkAndFollowOrUnfollow(followee, false);
     }
 
-    private void checkAndFollowOrUnfollow(long followee, boolean isSubscribe){
-        long follower = loginService.getLoginMemberIdx();
-        loginService.loginCheck(follower);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void checkAndFollowOrUnfollow(long followee, boolean isSubscribe){
+        long follower = loginCheck();
+        isExistUserCheck(followee);
 
-        boolean existUser = memberService.isExistUser(followee);
         boolean following = isFollowing(follower, followee);
 
-        if(existUser) {
-            if (!following && isSubscribe) {
-                followMapper.insertFollow(follower, followee);
-            } else if (following && !isSubscribe) {
-                followMapper.deleteFollow(follower, followee);
-            } else {
-                throw new AlreadyFollowingException();
-            }
-        } else {
-            throw new NotExistUserException();
+        if (following && isSubscribe){
+            throw new AlreadyFollowingException();
+        } else if (!following && !isSubscribe) {
+            throw new NotFollowingUserException();
         }
+
+        if (!following) {
+            followMapper.insertFollow(follower, followee);
+        } else {
+            followMapper.deleteFollow(follower, followee);
+        }
+    }
+
+    private long loginCheck() throws ForbiddenException{
+        return loginService.getLoginMemberIdx();
+    }
+
+    private void isExistUserCheck(long userId) throws NotExistUserException{
+        memberService.isExistUser(userId);
     }
 
     @Override
