@@ -4,6 +4,7 @@ import com.hobby.chain.follow.exception.AlreadyFollowingException;
 import com.hobby.chain.like.exception.AlreadyLikeException;
 import com.hobby.chain.member.Gender;
 import com.hobby.chain.member.dto.MemberDTO;
+import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.domain.mapper.PostMapper;
@@ -88,7 +89,6 @@ class LikeServiceImplTest {
     @DisplayName("게시물이 없는 경우")
     void 좋아요_실패_테스트2() {
         //given
-        postService.uploadNewPost(loginService.getLoginMemberIdx(), "test", null);
         long postId = 0L;
 
         //when
@@ -116,7 +116,6 @@ class LikeServiceImplTest {
     @DisplayName("게시물이 없는 경우")
     void 좋아요_취소_실패_테스트() {
         //given
-        postService.uploadNewPost(loginService.getLoginMemberIdx(), "test", null);
         long postId = 0L;
 
         //when
@@ -124,5 +123,18 @@ class LikeServiceImplTest {
 
         //then
         assertThat(ne.getClass()).isEqualTo(NoExistsPost.class);
+    }
+
+    @Test
+    @DisplayName("좋아요하지 않은 경우")
+    void 좋아요_취소_실패_테스트2() {
+        //given
+        long postId = postMapper.getLatestId();
+
+        //when
+        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> likeService.unlike(postId));
+
+        //then
+        assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);
     }
 }
