@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class FollowServiceImpl implements FollowService{
     private final FollowMapper followMapper;
@@ -67,6 +70,16 @@ public class FollowServiceImpl implements FollowService{
     @Override
     public boolean isFollowing(long follower, long followee) {
         return followMapper.isFollowing(follower, followee);
+    }
+
+    @Override
+    public long getFolloweeCountByUserId(long userId) {
+        return followMapper.getFolloweeCountByUserId(userId);
+    }
+
+    @Override
+    public List<Map<String, Long>> getFolloweeByUserId(long userId) {
+        return followMapper.getFolloweeByUserId(userId);
     }
 
 }
