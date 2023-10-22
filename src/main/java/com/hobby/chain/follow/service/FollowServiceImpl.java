@@ -64,7 +64,8 @@ public class FollowServiceImpl implements FollowService{
     }
 
     private void isExistUserCheck(long userId) throws NotExistUserException{
-        memberService.isExistUser(userId);
+        boolean existUser = memberService.isExistUser(userId);
+        if(!existUser) throw new NotExistUserException();
     }
 
     @Override
@@ -74,12 +75,26 @@ public class FollowServiceImpl implements FollowService{
 
     @Override
     public long getFolloweeCountByUserId(long userId) {
+        isExistUserCheck(userId);
         return followMapper.getFolloweeCountByUserId(userId);
     }
 
     @Override
     public List<Map<String, Long>> getFolloweeByUserId(long userId) {
+        isExistUserCheck(userId);
         return followMapper.getFolloweeByUserId(userId);
+    }
+
+    @Override
+    public long getFollowerCountByUserId(long userId) {
+        isExistUserCheck(userId);
+        return followMapper.getFollowerCountByUserId(userId);
+    }
+
+    @Override
+    public List<Map<String, Long>> getFollowerByUserId(long userId) {
+        isExistUserCheck(userId);
+        return followMapper.getFollowerByUserId(userId);
     }
 
 }

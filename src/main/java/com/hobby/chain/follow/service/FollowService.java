@@ -9,4 +9,6 @@ public interface FollowService {
     public boolean isFollowing(long follower, long followee);
     public long getFolloweeCountByUserId(long userId);
     public List<Map<String, Long>> getFolloweeByUserId(long userId);
+    public long getFollowerCountByUserId(long userId);
+    public List<Map<String, Long>> getFollowerByUserId(long userId);
 }
