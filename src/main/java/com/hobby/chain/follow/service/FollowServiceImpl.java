@@ -30,36 +30,32 @@ public class FollowServiceImpl implements FollowService{
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void subscribe(long followee) {
-        checkAndFollowOrUnfollow(followee, true);
+        long follower = getLoginUser();
+        isExistUserCheck(followee);
+
+        boolean following = isFollowing(follower, followee);
+        if(!following){
+            followMapper.deleteFollow(follower, followee);
+        } else {
+            throw new AlreadyFollowingException();
+        }
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void unsubscribe(long followee) {
-        checkAndFollowOrUnfollow(followee, false);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void checkAndFollowOrUnfollow(long followee, boolean isSubscribe){
-        long follower = loginCheck();
+        long follower = getLoginUser();
         isExistUserCheck(followee);
 
         boolean following = isFollowing(follower, followee);
-
-        if (following && isSubscribe){
-            throw new AlreadyFollowingException();
-        } else if (!following && !isSubscribe) {
-            throw new NotFollowingUserException();
-        }
-
-        if (!following) {
-            followMapper.insertFollow(follower, followee);
-        } else {
+        if(following){
             followMapper.deleteFollow(follower, followee);
+        } else {
+            throw new NotFollowingUserException();
         }
     }
 
-    private long loginCheck() throws ForbiddenException{
+    private long getLoginUser() throws ForbiddenException{
         return loginService.getLoginMemberIdx();
     }
 
