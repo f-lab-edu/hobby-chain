@@ -28,13 +28,28 @@ public class LikeServiceImpl implements LikeService{
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void like(long postId) {
-        checkAndLikeOrUnlike(postId, true);
+        checkExistsPost(postId);
+
+        boolean like = isLike(postId);
+        if(like){
+            likeMapper.insertLike(postId, getLoginUser());
+        } else {
+            throw new ForbiddenException();
+        }
+
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void unlike(long postId) {
-        checkAndLikeOrUnlike(postId, false);
+        checkExistsPost(postId);
+
+        boolean like = isLike(postId);
+        if(like) {
+            likeMapper.deleteLike(postId, getLoginUser());
+        } else {
+            throw new ForbiddenException();
+        }
     }
 
     @Override
@@ -42,35 +57,17 @@ public class LikeServiceImpl implements LikeService{
         return likeMapper.getLikeByPostId(postId);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void checkAndLikeOrUnlike(long postId, boolean isLikeRequest) {
-        long loginUser = loginCheck();
-        isExistsPost(postId);
-
-        boolean isLike = isLike(postId, loginUser);
-
-        if (!isLike && !isLikeRequest) {
-            throw new ForbiddenException();
-        } else if (isLike && isLikeRequest) {
-            throw new AlreadyLikeException();
-        }
-
-        if (isLikeRequest) {
-            likeMapper.insertLike(loginUser, postId);
-        } else {
-            likeMapper.deleteLike(loginUser, postId);
-        }
+    private void checkExistsPost(long postId) throws NoExistsPost{
+        boolean existsPost = postService.isExistsPost(postId);
+        if(!existsPost) throw new NoExistsPost();
     }
 
-    private long loginCheck() throws ForbiddenException{
-        return loginService.getLoginMemberIdx();
-    }
-
-    private void isExistsPost(long postId) throws NoExistsPost{
-        if(!postService.isExistsPost(postId)) throw new NoExistsPost();
-    }
-
-    private boolean isLike(long postId, long userId) {
+    private boolean isLike(long postId) {
+        long userId = loginService.getLoginMemberIdx();
         return likeMapper.isLike(postId, userId);
+    }
+
+    private long getLoginUser(){
+        return loginService.getLoginMemberIdx();
     }
 }
