@@ -38,7 +38,7 @@ public class PostServiceImpl implements PostService{
 
         long postId = insertPost(userId, content);
 
-        if (CollectionUtils.isEmpty(images)){
+        if (!CollectionUtils.isEmpty(images)){
             uploadImages(images, postId);
         }
     }
