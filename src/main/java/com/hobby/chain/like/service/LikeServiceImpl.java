@@ -6,6 +6,7 @@ import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.post.exception.NoExistsPost;
 import com.hobby.chain.post.service.PostService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +29,13 @@ public class LikeServiceImpl implements LikeService{
         checkExistsPost(postId);
 
         long userId = getLoginUser();
-        boolean like = isLike(postId);
-        System.out.println(like);
 
-        if(!like){
+        try{
             likeMapper.insertLike(postId, userId);
-        } else {
+        } catch (DuplicateKeyException de){
             throw new AlreadyLikeException();
         }
+
 
     }
 
@@ -48,7 +48,7 @@ public class LikeServiceImpl implements LikeService{
         if(like) {
             likeMapper.deleteLike(postId, getLoginUser());
         } else {
-            throw new ForbiddenException();
+            throw new ForbiddenException("좋아요를 삭제할 권한이 없습니다.");
         }
     }
 
