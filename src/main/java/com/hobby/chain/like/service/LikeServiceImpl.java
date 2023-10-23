@@ -31,7 +31,7 @@ public class LikeServiceImpl implements LikeService{
         checkExistsPost(postId);
 
         boolean like = isLike(postId);
-        if(like){
+        if(!like){
             likeMapper.insertLike(postId, getLoginUser());
         } else {
             throw new ForbiddenException();
