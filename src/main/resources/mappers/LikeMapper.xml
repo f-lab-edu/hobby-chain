@@ -18,7 +18,7 @@
                 WHERE post_id = #{postId} and user_id = #{userId})
     </select>
     
-    <select id="getLikeByPostId" parameterType="long" resultType="int">
+    <select id="getLikeByPostId" parameterType="long" resultType="long">
         SELECT COUNT(user_id) from post_like
         WHERE post_id = #{postId}
     </select>

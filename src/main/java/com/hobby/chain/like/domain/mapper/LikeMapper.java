@@ -8,5 +8,5 @@ public interface LikeMapper {
     boolean isLike(@Param("postId") long postId, @Param("userId") long userId);
     void insertLike(@Param("userId") long userId, @Param("postId") long postId);
     void deleteLike(@Param("userId") long userId, @Param("postId") long postId);
-    int getLikeByPostId(@Param("postId") long postId);
+    long getLikeByPostId(@Param("postId") long postId);
 }

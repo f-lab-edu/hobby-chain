@@ -3,14 +3,11 @@ package com.hobby.chain.like.service;
 import com.hobby.chain.like.domain.mapper.LikeMapper;
 import com.hobby.chain.like.exception.AlreadyLikeException;
 import com.hobby.chain.member.exception.ForbiddenException;
-import com.hobby.chain.member.exception.NotExistUserException;
 import com.hobby.chain.member.service.MemberLoginService;
-import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.exception.NoExistsPost;
 import com.hobby.chain.post.service.PostService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -30,11 +27,14 @@ public class LikeServiceImpl implements LikeService{
     public void like(long postId) {
         checkExistsPost(postId);
 
+        long userId = getLoginUser();
         boolean like = isLike(postId);
+        System.out.println(like);
+
         if(!like){
-            likeMapper.insertLike(postId, getLoginUser());
+            likeMapper.insertLike(postId, userId);
         } else {
-            throw new ForbiddenException();
+            throw new AlreadyLikeException();
         }
 
     }
@@ -53,7 +53,7 @@ public class LikeServiceImpl implements LikeService{
     }
 
     @Override
-    public int getLikeCount(long postId) {
+    public long getLikeCount(long postId) {
         return likeMapper.getLikeByPostId(postId);
     }
 
@@ -63,7 +63,7 @@ public class LikeServiceImpl implements LikeService{
     }
 
     private boolean isLike(long postId) {
-        long userId = loginService.getLoginMemberIdx();
+        long userId = getLoginUser();
         return likeMapper.isLike(postId, userId);
     }
 
