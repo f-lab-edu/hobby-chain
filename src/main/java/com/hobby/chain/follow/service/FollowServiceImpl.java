@@ -9,7 +9,11 @@ import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FollowServiceImpl implements FollowService{
@@ -26,33 +30,38 @@ public class FollowServiceImpl implements FollowService{
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void subscribe(long followee) {
-        checkAndFollowOrUnfollow(followee, true);
+        long follower = getLoginUser();
+        isExistUserCheck(followee);
+
+        boolean following = isFollowing(follower, followee);
+        if(!following){
+            followMapper.deleteFollow(follower, followee);
+        } else {
+            throw new AlreadyFollowingException();
+        }
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void unsubscribe(long followee) {
-        checkAndFollowOrUnfollow(followee, false);
+        long follower = getLoginUser();
+        isExistUserCheck(followee);
+
+        boolean following = isFollowing(follower, followee);
+        if(following){
+            followMapper.deleteFollow(follower, followee);
+        } else {
+            throw new NotFollowingUserException();
+        }
     }
 
-    private void checkAndFollowOrUnfollow(long followee, boolean isSubscribe){
-        long follower = loginService.getLoginMemberIdx();
-        loginCheck(follower);
+    private long getLoginUser() throws ForbiddenException{
+        return loginService.getLoginMemberIdx();
+    }
 
-        boolean existUser = memberService.isExistUser(followee);
-        boolean following = isFollowing(follower, followee);
-
-        if(existUser) {
-            if (!following && isSubscribe) {
-                followMapper.insertFollow(follower, followee);
-            } else if (following && !isSubscribe) {
-                followMapper.deleteFollow(follower, followee);
-            } else {
-                throw new AlreadyFollowingException();
-            }
-        } else {
-            throw new NotExistUserException();
-        }
+    private void isExistUserCheck(long userId) throws NotExistUserException{
+        boolean existUser = memberService.isExistUser(userId);
+        if(!existUser) throw new NotExistUserException();
     }
 
     @Override
@@ -60,11 +69,28 @@ public class FollowServiceImpl implements FollowService{
         return followMapper.isFollowing(follower, followee);
     }
 
-    private void loginCheck(long userId) throws ForbiddenException{
-        long loginMemberIdx = loginService.getLoginMemberIdx();
-        if(userId != loginMemberIdx){
-            throw new ForbiddenException("로그인이 필요한 기능입니다.");
-        }
+    @Override
+    public long getFolloweeCountByUserId(long userId) {
+        isExistUserCheck(userId);
+        return followMapper.getFolloweeCountByUserId(userId);
+    }
+
+    @Override
+    public List<Map<String, Long>> getFolloweeByUserId(long userId) {
+        isExistUserCheck(userId);
+        return followMapper.getFolloweeByUserId(userId);
+    }
+
+    @Override
+    public long getFollowerCountByUserId(long userId) {
+        isExistUserCheck(userId);
+        return followMapper.getFollowerCountByUserId(userId);
+    }
+
+    @Override
+    public List<Map<String, Long>> getFollowerByUserId(long userId) {
+        isExistUserCheck(userId);
+        return followMapper.getFollowerByUserId(userId);
     }
 
 }

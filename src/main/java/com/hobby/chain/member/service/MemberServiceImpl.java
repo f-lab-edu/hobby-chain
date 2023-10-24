@@ -121,4 +121,11 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     public boolean isExistUser(long userId) {
         return memberMapper.isExistMemberById(userId);
     }
+
+    public void loginCheck(long userId) throws ForbiddenException{
+        long loginMemberIdx = getLoginMemberIdx();
+        if(userId != loginMemberIdx){
+            throw new ForbiddenException("로그인이 필요한 기능입니다.");
+        }
+    }
 }

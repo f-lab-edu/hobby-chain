@@ -19,4 +19,32 @@
             WHERE follower = #{follower}
             AND followee = #{followee})
     </select>
+
+    <select id="getFolloweeByUserId" parameterType="long" resultType="map">
+        SELECT mf.followee, m.nickName
+        FROM `member` as m
+        join member_follow as mf
+        on m.user_id = mf.followee
+        WHERE mf.follower = #{followerId}
+    </select>
+
+    <select id="getFolloweeCountByUserId" parameterType="long" resultType="long">
+        SELECT COUNT(followee)
+        FROM member_follow
+        WHERE follower = #{followerId}
+    </select>
+
+    <select id="getFollowerByUserId" parameterType="long" resultType="map">
+        SELECT mf.follower, m.nickName
+        FROM `member` as m
+                 join member_follow as mf
+                      on m.user_id = mf.follower
+        WHERE mf.followee = #{followeeId}
+    </select>
+
+    <select id="getFollowerCountByUserId" parameterType="long" resultType="long">
+        SELECT COUNT(follower)
+        FROM member_follow
+        WHERE followee = #{followeeId}
+    </select>
 </mapper>
