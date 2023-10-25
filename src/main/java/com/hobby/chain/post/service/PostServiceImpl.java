@@ -77,7 +77,7 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void updatePost(long userId, long postId, String content) {
-        if(isauthorizedOnPost(userId, postId)){
+        if(isAuthorizedOnPost(userId, postId)){
             mapper.updatePost(content, postId);
         } else{
             throw new ForbiddenException("게시물을 수정할 권한이 없습니다.");
@@ -92,7 +92,7 @@ public class PostServiceImpl implements PostService{
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deletePost(long userId, long postId) {
-        if(isauthorizedOnPost(userId, postId)){
+        if(isAuthorizedOnPost(userId, postId)){
             if(mapper.isExistsImage(postId)){
                 fileMapper.deleteImages(postId);
             }
@@ -102,7 +102,7 @@ public class PostServiceImpl implements PostService{
         }
     }
 
-    private boolean isauthorizedOnPost(long userId, long postId){
+    private boolean isAuthorizedOnPost(long userId, long postId){
         return mapper.isAuthorizedOnPost(userId, postId);
     }
 
