@@ -67,12 +67,12 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    public long getLoginMemberIdx() throws NullPointerException{
+    public long getLoginMemberIdx() throws ForbiddenException{
         Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
         if(userId != null){
             return (long) userId;
         } else {
-            throw new NullPointerException();
+            throw new ForbiddenException();
         }
     }
 

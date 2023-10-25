@@ -26,8 +26,8 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         try{
             return loginService.getLoginMemberIdx();
-        } catch (NullPointerException exception){
-            throw new ForbiddenException("로그인이 필요한 기능입니다.");
+        } catch (ForbiddenException exception){
+            throw exception;
         }
     }
 }

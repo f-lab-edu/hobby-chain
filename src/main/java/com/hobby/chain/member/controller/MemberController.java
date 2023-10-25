@@ -1,5 +1,6 @@
 package com.hobby.chain.member.controller;
 
+import com.hobby.chain.annotation.CheckLogin;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.MemberLogin;
@@ -45,11 +46,13 @@ public class MemberController {
     }
 
     @PutMapping("/edit")
+    @CheckLogin
     public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo){
         memberService.updateMemberInfo(requestInfo);
     }
 
     @DeleteMapping
+    @CheckLogin
     public void deleteMember(){
         memberService.deleteMember();
     }
