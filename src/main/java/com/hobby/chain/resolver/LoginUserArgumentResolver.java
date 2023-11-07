@@ -1,8 +1,7 @@
 package com.hobby.chain.resolver;
 
-import com.hobby.chain.annotation.CheckLogin;
+import com.hobby.chain.annotation.LoginUser;
 import com.hobby.chain.member.exception.ForbiddenException;
-import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.util.SessionKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -12,22 +11,25 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import javax.servlet.http.HttpSession;
+
 @RequiredArgsConstructor
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final MemberLoginService loginService;
+    private final HttpSession session;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(CheckLogin.class);
+        return parameter.hasParameterAnnotation(LoginUser.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        try{
-            return loginService.getLoginMemberIdx();
-        } catch (ForbiddenException exception){
-            throw exception;
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory){
+        Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
+        if(userId != null){
+            return userId;
+        } else {
+            throw new ForbiddenException();
         }
     }
 }
