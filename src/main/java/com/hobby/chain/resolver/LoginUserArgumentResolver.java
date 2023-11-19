@@ -1,6 +1,5 @@
 package com.hobby.chain.resolver;
 
-import com.hobby.chain.annotation.LoginUser;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.util.SessionKey;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUser.class);
+        return parameter.getParameter().equals(Long.class);
     }
 
     @Override
