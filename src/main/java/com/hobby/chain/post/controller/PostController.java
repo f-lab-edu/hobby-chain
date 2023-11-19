@@ -15,18 +15,16 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
-    private final MemberLoginService loginService;
 
-    public PostController(PostService service, MemberLoginService loginService) {
+    public PostController(PostService service) {
         this.postService = service;
-        this.loginService = loginService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void uploadNewPost(@RequestParam String content,
-                              @RequestParam List<MultipartFile> images){
-        postService.uploadNewPost(loginService.getLoginMemberIdx(), content, images);
+                              @RequestParam List<MultipartFile> images, Long userId){
+        postService.uploadNewPost(userId, content, images);
     }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -41,13 +39,13 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public void updatePost(@PathVariable long postId, @RequestParam String content){
-        postService.updatePost(loginService.getLoginMemberIdx(), postId, content);
+    public void updatePost(@PathVariable long postId, @RequestParam String content, Long userId){
+        postService.updatePost(userId, postId, content);
     }
 
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable long postId){
-        postService.deletePost(loginService.getLoginMemberIdx(), postId);
+    public void deletePost(@PathVariable long postId, Long userId){
+        postService.deletePost(userId, postId);
     }
 
 }
