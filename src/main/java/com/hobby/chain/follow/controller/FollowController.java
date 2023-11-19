@@ -16,13 +16,13 @@ public class FollowController {
     }
 
     @PostMapping("/follows")
-    public void subscribeUser(@RequestParam("followeeId") long followee){
-        followService.subscribe(followee);
+    public void subscribeUser(Long userId, @RequestParam("followeeId") long followee){
+        followService.subscribe(userId, followee);
     }
 
     @DeleteMapping("/follows")
-    public void unsubscribe(@RequestParam("followeeId") long followee){
-        followService.unsubscribe(followee);
+    public void unsubscribe(Long userId, @RequestParam("followeeId") long followee){
+        followService.unsubscribe(userId, followee);
     }
 
     @GetMapping("/{userId}/followers")

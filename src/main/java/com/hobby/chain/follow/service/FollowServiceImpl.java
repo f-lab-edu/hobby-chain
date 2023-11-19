@@ -19,18 +19,15 @@ import java.util.Map;
 public class FollowServiceImpl implements FollowService{
     private final FollowMapper followMapper;
     private final MemberService memberService;
-    private final MemberLoginService loginService;
 
-    public FollowServiceImpl(FollowMapper followMapper, MemberService memberService, MemberLoginService loginService) {
+    public FollowServiceImpl(FollowMapper followMapper, MemberService memberService) {
         this.followMapper = followMapper;
         this.memberService = memberService;
-        this.loginService = loginService;
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void subscribe(long followee) {
-        long follower = getLoginUser();
+    public void subscribe(Long follower, long followee) {
         isExistUserCheck(followee);
 
         boolean following = isFollowing(follower, followee);
@@ -43,8 +40,7 @@ public class FollowServiceImpl implements FollowService{
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void unsubscribe(long followee) {
-        long follower = getLoginUser();
+    public void unsubscribe(Long follower, long followee) {
         isExistUserCheck(followee);
 
         boolean following = isFollowing(follower, followee);
@@ -53,10 +49,6 @@ public class FollowServiceImpl implements FollowService{
         } else {
             throw new NotFollowingUserException();
         }
-    }
-
-    private long getLoginUser() throws ForbiddenException{
-        return loginService.getLoginMemberIdx();
     }
 
     private void isExistUserCheck(long userId) throws NotExistUserException{
