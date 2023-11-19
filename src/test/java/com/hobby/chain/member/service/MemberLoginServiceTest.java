@@ -50,7 +50,7 @@ public class MemberLoginServiceTest {
         loginService.login(userId, pwd);
 
         //then
-        assertThat(userId).isEqualTo(memberService.getMemberInfo().getEmail());
+        assertThat(userId).isEqualTo(memberService.getMemberInfo(loginService.getLoginMemberIdx()).getEmail());
     }
 
     @Test
