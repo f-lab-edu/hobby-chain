@@ -13,12 +13,12 @@ public class LikeController {
     }
 
     @PostMapping
-    public void like(@RequestParam("postId") long postId) {
-        likeService.like(postId);
+    public void like(Long userId, @RequestParam("postId") long postId) {
+        likeService.like(userId, postId);
     }
 
     @DeleteMapping
-    public void unlike(@RequestParam("postId") long postId){
-        likeService.unlike(postId);
+    public void unlike(Long userId, @RequestParam("postId") long postId){
+        likeService.unlike(userId, postId);
     }
 }
