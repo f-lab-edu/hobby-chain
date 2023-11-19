@@ -1,6 +1,5 @@
 package com.hobby.chain.member.controller;
 
-import com.hobby.chain.annotation.LoginUser;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.MemberLogin;
@@ -41,20 +40,17 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    @LoginUser
-    public MemberInfo getMemberInfo(){
-        return memberService.getMemberInfo();
+    public MemberInfo getMemberInfo(Long userId){
+        return memberService.getMemberInfo(userId);
     }
 
     @PutMapping("/edit")
-    @LoginUser
-    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo){
-        memberService.updateMemberInfo(requestInfo);
+    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo, Long userId){
+        memberService.updateMemberInfo(userId, requestInfo);
     }
 
     @DeleteMapping
-    @LoginUser
-    public void deleteMember(){
-        memberService.deleteMember();
+    public void deleteMember(Long userId){
+        memberService.deleteMember(userId);
     }
 }

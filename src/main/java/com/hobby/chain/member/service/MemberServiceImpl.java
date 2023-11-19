@@ -77,20 +77,20 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    public MemberInfo getMemberInfo() {
-        return memberMapper.getMemberInfo(getLoginMemberIdx());
+    public MemberInfo getMemberInfo(Long userId) {
+        return memberMapper.getMemberInfo(userId);
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void updateMemberInfo(UpdateRequestInfo requestInfo){
-        MemberInfo memberInfo = buildMemberInfo(requestInfo);
+    public void updateMemberInfo(Long userId, UpdateRequestInfo requestInfo){
+        MemberInfo memberInfo = buildMemberInfo(userId, requestInfo);
         memberMapper.updateMemberInfo(memberInfo);
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void deleteMember() {
+    public void deleteMember(Long userId) {
         memberMapper.deleteMember(getLoginMemberIdx());
         logout();
     }
@@ -107,9 +107,9 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
                 .build();
     }
 
-    private MemberInfo buildMemberInfo(UpdateRequestInfo requestInfo){
+    private MemberInfo buildMemberInfo(Long userId, UpdateRequestInfo requestInfo){
         return MemberInfo.builder().
-                userId(getLoginMemberIdx())
+                userId(userId)
                 .nickName(requestInfo.getNickName())
                 .phoneNumber(requestInfo.getPhoneNumber())
                 .gender(requestInfo.getGender())
