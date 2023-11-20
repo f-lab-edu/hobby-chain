@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ReplyService {
     public void writeReply(long postId, long userId, String content);
-    public List<ReplyResponse> getReplysByPostId(long postId);
+    public List<ReplyResponse> getReplysByPostId(long postId, long startIdx);
 }

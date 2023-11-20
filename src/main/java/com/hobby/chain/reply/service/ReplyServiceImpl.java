@@ -24,8 +24,8 @@ public class ReplyServiceImpl implements ReplyService{
     }
 
     @Override
-    public List<ReplyResponse> getReplysByPostId(long postId) {
-        return replyMapper.getReplysByPostId(postId);
+    public List<ReplyResponse> getReplysByPostId(long postId, long startIdx) {
+        return replyMapper.getReplysByPostId(postId, startIdx);
     }
 
     private ReplyRequest toRequest(long postId, long userId, String content){

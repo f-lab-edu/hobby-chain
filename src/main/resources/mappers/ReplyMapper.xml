@@ -11,6 +11,8 @@
         FROM post_reply as pr
         JOIN member as m
         on m.user_id = pr.user_id
-        WHERE post_id = #{postId}
+        WHERE pr.post_id = #{postId} AND pr.reply_id <![CDATA[<=]]> #{startIdx}
+        ORDER BY pr.reply_id DESC
+        limit 20
     </select>
 </mapper>

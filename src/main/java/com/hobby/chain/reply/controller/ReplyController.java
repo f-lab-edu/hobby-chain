@@ -15,12 +15,12 @@ public class ReplyController {
     }
 
     @GetMapping("/{postId}")
-    public List<ReplyResponse> getReplysByPostId(@PathVariable long postId){
-        return replyService.getReplysByPostId(postId);
+    public List<ReplyResponse> getReplysByPostId(@PathVariable long postId, @RequestParam(defaultValue = "0") long startIdx){
+        return replyService.getReplysByPostId(postId, startIdx);
     }
 
     @PostMapping("/{postId}")
-    public void writeReply(@PathVariable long postId, long userId, String content){
+    public void writeReply(@PathVariable long postId, Long userId, String content){
         replyService.writeReply(postId, userId, content);
     }
 
