@@ -6,15 +6,18 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.exception.FileUploadFailException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -29,12 +32,20 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public List<ImageDTO> uploadFiles(List<MultipartFile> files, long postId) throws FileUploadFailException {
-         return files.stream()
-                 .map(file -> uploadAndToDto(file, postId))
-                 .collect(Collectors.toList());
+        List<ImageDTO> result = new ArrayList<>();
+        for(MultipartFile file : files){
+            try {
+                ImageDTO imageDTO = uploadAndToDto(file, postId).get();
+                result.add(imageDTO);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 
-    private ImageDTO uploadAndToDto(MultipartFile file, long postId) throws FileUploadFailException {
+    @Async
+    public Future<ImageDTO> uploadAndToDto(MultipartFile file, long postId) throws FileUploadFailException {
         String fileName = file.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();
         String extension = fileName != null ? fileName.substring(fileName.lastIndexOf(".")) : null;
@@ -44,7 +55,7 @@ public class FileServiceImpl implements FileService{
         try{
             byte[] fileData = file.getBytes();
             uploadToBucket(objectKey, fileData);
-            return createImageDTO(uuid, fileName, fileSize, objectKey);
+            return AsyncResult.forValue(createImageDTO(postId, uuid, fileSize, objectKey));
         } catch (IOException e) {
             throw new FileUploadFailException("버킷에 파일 업로드 중 실패하였습니다.");
         }
@@ -56,10 +67,10 @@ public class FileServiceImpl implements FileService{
                 new ByteArrayInputStream(fileData), new ObjectMetadata()));
     }
 
-    private ImageDTO createImageDTO(String uuid, String fileName, long fileSize, String objectKey) {
+    private ImageDTO createImageDTO(long postId, String uuid, long fileSize, String objectKey) {
         return ImageDTO.builder()
+                .postId(postId)
                 .imageId(uuid)
-                .imageName(fileName)
                 .fileSize(fileSize)
                 .imagePath(objectKey)
                 .build();
