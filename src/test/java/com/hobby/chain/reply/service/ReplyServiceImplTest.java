@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @SpringBootTest
-@Transactional
 class ReplyServiceImplTest {
     private final ReplyService replyService;
     private final PostService postService;
@@ -62,7 +61,7 @@ class ReplyServiceImplTest {
         replyService.writeReply(postId, userId, "testReply");
 
         //then
-        Assertions.assertThat(replyService.getReplysByPostId(postId).size()).isEqualTo(1);
+        Assertions.assertThat(replyService.getReplysByPostId(postId, 0).size()).isEqualTo(1);
     }
 
     @Test
@@ -73,9 +72,9 @@ class ReplyServiceImplTest {
         replyService.writeReply(postId, userId, "testReply");
 
         //when
-        List<ReplyResponse> replys = replyService.getReplysByPostId(postId);
+        List<ReplyResponse> replys = replyService.getReplysByPostId(postId, 0);
 
         //then
-        Assertions.assertThat(replys.get(0)).isNotNull();
+        Assertions.assertThat(replys.size()).isEqualTo(1);
     }
 }
