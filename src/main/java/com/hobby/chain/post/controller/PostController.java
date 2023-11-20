@@ -30,8 +30,8 @@ public class PostController {
     }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ResponsePost> getPosts(@RequestParam(defaultValue = "0") long currentSeq){
-        return postService.getPosts(currentSeq);
+    public List<ResponsePost> getPosts(@RequestParam(defaultValue = "0") long start){
+        return postService.getPosts(start);
     }
 
     @GetMapping("/{postId}")

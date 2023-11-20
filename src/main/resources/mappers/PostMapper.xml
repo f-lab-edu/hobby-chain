@@ -39,7 +39,7 @@
         from post as p
         LEFT join post_image as i
         on p.post_id = i.post_id
-        where p.post_id <![CDATA[<=]]> #{startIdx}
+        where p.post_id <![CDATA[<]]> #{startIdx}
         order by p.post_id desc
         limit 15
     </select>

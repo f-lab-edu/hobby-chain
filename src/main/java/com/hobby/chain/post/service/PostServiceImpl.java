@@ -69,8 +69,8 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<ResponsePost> getPosts(long currentSeq) {
-        long startIdx = mapper.getLatestId() - (currentSeq*15);
+    public List<ResponsePost> getPosts(long start) {
+        long startIdx = mapper.getLatestId() - start;
         return mapper.getPosts(startIdx);
     }
 
