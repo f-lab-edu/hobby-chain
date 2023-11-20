@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class ReplyRequest {
     private long postId;
     private long userId;
