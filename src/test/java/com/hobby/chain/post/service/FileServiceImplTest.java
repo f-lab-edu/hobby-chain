@@ -25,17 +25,18 @@ class FileServiceImplTest {
     @Test
     void 파일_업로드_정상_테스트() throws Exception{
         //given
-        MultipartFile file = new MockMultipartFile("image", "test.png", "image/png",
-                new FileInputStream("/Users/mac/Downloads/test.png"));
         files = new ArrayList<>();
-        files.add(file);
+        for(int i = 0; i < 6; i++){
+            MultipartFile file = new MockMultipartFile("image", "test.png", "image/png", new FileInputStream("/Users/mac/Downloads/test.png"));
+            files.add(file);
+        }
         long postId = 1L;
 
         //when
         List<ImageDTO> imageDTOS = fileService.uploadFiles(files, postId);
 
         //then
-        Assertions.assertThat(imageDTOS.size()).isEqualTo(1);
+        Assertions.assertThat(imageDTOS.size()).isEqualTo(6);
     }
 
 }
