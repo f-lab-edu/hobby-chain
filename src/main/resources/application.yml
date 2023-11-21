@@ -27,3 +27,9 @@ hobby:
   chain:
     file:
       dir: /Users/mac/Desktop/imgDir
+
+# Firebase Service
+firebase:
+  account:
+    key:
+      path: hobby-chain-firebase-adminsdk.json
