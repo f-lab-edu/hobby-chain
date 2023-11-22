@@ -1,7 +1,7 @@
 package com.hobby.chain.reply.service;
 
+import com.hobby.chain.reply.domain.entity.Reply;
 import com.hobby.chain.reply.domain.mapper.ReplyMapper;
-import com.hobby.chain.reply.dto.ReplyRequest;
 import com.hobby.chain.reply.dto.ReplyResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +19,8 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     @Transactional
     public void writeReply(long postId, long userId, String content) {
-        ReplyRequest request = toRequest(postId, userId, content);
-        replyMapper.insertReply(request);
+        Reply reply = toEntity(postId, userId, content);
+        replyMapper.insertReply(reply);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class ReplyServiceImpl implements ReplyService{
         return replyMapper.getReplysByPostId(postId, startIdx);
     }
 
-    private ReplyRequest toRequest(long postId, long userId, String content){
-        return ReplyRequest.builder()
+    private Reply toEntity(long postId, long userId, String content){
+        return Reply.builder()
                 .postId(postId)
                 .userId(userId)
                 .content(content).build();
