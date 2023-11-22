@@ -5,8 +5,8 @@ import com.hobby.chain.push.PushType;
 import java.util.List;
 
 public interface PushService {
-    public void setToken(Long userId);
-    public Object getToken(long userId);
-    public void deleteToken(long userId);
-    public void sendPushMessage(long userId, List<Long> receiveId, PushType pushType, String pushMessage);
+    public void setToken(String userId);
+    public String getToken(String userId);
+    public void deleteToken(String userId);
+    public void sendPushMessage(List<String> receiveId, PushType pushType, String pushMessage);
 }
