@@ -9,11 +9,11 @@ import com.hobby.chain.member.exception.DuplicationException;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
 import com.hobby.chain.member.exception.NotExistUserException;
+import com.hobby.chain.push.service.PushService;
 import com.hobby.chain.util.SessionKey;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
@@ -23,11 +23,13 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final HttpSession session;
+    private final PushService pushService;
 
-    public MemberServiceImpl(MemberMapper memberMapper, PasswordEncoder passwordEncoder, HttpSession session) {
+    public MemberServiceImpl(MemberMapper memberMapper, PasswordEncoder passwordEncoder, HttpSession session, PushService pushService) {
         this.memberMapper = memberMapper;
         this.passwordEncoder = passwordEncoder;
         this.session = session;
+        this.pushService = pushService;
     }
 
     @Override
@@ -59,11 +61,13 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         }
 
         session.setAttribute(SessionKey.MEMBER_IDX, loginInfo.getUserId());
+        pushService.setToken(String.valueOf(loginInfo.getUserId()));
     }
 
     @Override
     public void logout() {
         session.removeAttribute(SessionKey.MEMBER_IDX);
+        pushService.setToken(String.valueOf(getLoginMemberIdx()));
     }
 
     @Override
