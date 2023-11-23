@@ -1,6 +1,7 @@
 package com.hobby.chain.follow.controller;
 
 import com.hobby.chain.follow.service.FollowService;
+import com.hobby.chain.member.dto.MemberId;
 import com.hobby.chain.member.service.MemberLoginService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +17,13 @@ public class FollowController {
     }
 
     @PostMapping("/follows")
-    public void subscribeUser(Long userId, @RequestParam("followeeId") long followee){
-        followService.subscribe(userId, followee);
+    public void subscribeUser(MemberId memberId, @RequestParam("followeeId") long followee){
+        followService.subscribe(memberId.getUserId(), followee);
     }
 
     @DeleteMapping("/follows")
-    public void unsubscribe(Long userId, @RequestParam("followeeId") long followee){
-        followService.unsubscribe(userId, followee);
+    public void unsubscribe(MemberId memberId, @RequestParam("followeeId") long followee){
+        followService.unsubscribe(memberId.getUserId(), followee);
     }
 
     @GetMapping("/{userId}/followers")
