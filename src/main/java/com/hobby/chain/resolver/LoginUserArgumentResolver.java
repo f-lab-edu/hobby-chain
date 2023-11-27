@@ -1,6 +1,6 @@
 package com.hobby.chain.resolver;
 
-import com.hobby.chain.member.dto.MemberId;
+import com.hobby.chain.member.dto.CertificatedMember;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.util.SessionKey;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameter().equals(MemberId.class);
+        return parameter.getParameter().equals(CertificatedMember.class);
     }
 
     @Override

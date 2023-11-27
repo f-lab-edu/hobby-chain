@@ -1,7 +1,7 @@
 package com.hobby.chain.like.controller;
 
 import com.hobby.chain.like.service.LikeService;
-import com.hobby.chain.member.dto.MemberId;
+import com.hobby.chain.member.dto.CertificatedMember;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,12 +14,12 @@ public class LikeController {
     }
 
     @PostMapping
-    public void like(MemberId memberId, @RequestParam("postId") long postId) {
+    public void like(CertificatedMember memberId, @RequestParam("postId") long postId) {
         likeService.like(memberId.getUserId(), postId);
     }
 
     @DeleteMapping
-    public void unlike(MemberId memberId, @RequestParam("postId") long postId){
+    public void unlike(CertificatedMember memberId, @RequestParam("postId") long postId){
         likeService.unlike(memberId.getUserId(), postId);
     }
 }

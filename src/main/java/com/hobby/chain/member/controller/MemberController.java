@@ -37,17 +37,17 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public MemberInfo getMemberInfo(MemberId memberId){
+    public MemberInfo getMemberInfo(CertificatedMember memberId){
         return memberService.getMemberInfo(memberId.getUserId());
     }
 
     @PutMapping("/edit")
-    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo, MemberId memberId){
+    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo, CertificatedMember memberId){
         memberService.updateMemberInfo(memberId.getUserId(), requestInfo);
     }
 
     @DeleteMapping
-    public void deleteMember(MemberId memberId){
+    public void deleteMember(CertificatedMember memberId){
         memberService.deleteMember(memberId.getUserId());
     }
 }

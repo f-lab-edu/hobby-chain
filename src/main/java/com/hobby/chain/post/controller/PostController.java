@@ -1,8 +1,6 @@
 package com.hobby.chain.post.controller;
 
-import com.hobby.chain.member.dto.MemberId;
-import com.hobby.chain.member.service.MemberLoginService;
-import com.hobby.chain.post.dto.PostDTO;
+import com.hobby.chain.member.dto.CertificatedMember;
 import com.hobby.chain.post.dto.ResponsePost;
 import com.hobby.chain.post.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -24,7 +22,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void uploadNewPost(@RequestParam String content,
-                              @RequestParam List<MultipartFile> images, MemberId memberId){
+                              @RequestParam List<MultipartFile> images, CertificatedMember memberId){
         postService.uploadNewPost(memberId.getUserId(), content, images);
     }
     @GetMapping
@@ -40,12 +38,12 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public void updatePost(@PathVariable long postId, @RequestParam String content, MemberId memberId){
+    public void updatePost(@PathVariable long postId, @RequestParam String content, CertificatedMember memberId){
         postService.updatePost(memberId.getUserId(), postId, content);
     }
 
     @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable long postId, MemberId memberId){
+    public void deletePost(@PathVariable long postId, CertificatedMember memberId){
         postService.deletePost(memberId.getUserId(), postId);
     }
 
