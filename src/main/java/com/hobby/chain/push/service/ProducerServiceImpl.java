@@ -27,7 +27,7 @@ public class ProducerServiceImpl implements ProducerService{
     }
 
     @Override
-    public void sendMessage(List<String> receiveIds, PushType pushType, String pushMessageo) {
+    public void sendMessageToQueue(List<String> receiveIds, PushType pushType, String pushMessageo) {
         for (String receiveId : receiveIds) {
             MessageDto messageDto = buildDto(receiveId, pushType, pushMessageo);
             rabbitTemplate.convertAndSend(exchange, routingKey, messageDto);
