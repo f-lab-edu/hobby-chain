@@ -96,7 +96,7 @@ class MemberServiceImplTest {
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
 
         //when
-        MemberInfo memberInfo = memberService.getMemberInfo();
+        MemberInfo memberInfo = memberService.getMemberInfo(loginService.getLoginMemberIdx());
 
         //then
         assertThat(memberDTO.getEmail()).isEqualTo(memberInfo.getEmail());
@@ -123,10 +123,10 @@ class MemberServiceImplTest {
                 .birth(Date.valueOf("2004-02-27")).build();
 
         //when
-        memberService.updateMemberInfo(requestInfo);
+        memberService.updateMemberInfo(loginService.getLoginMemberIdx(), requestInfo);
 
         //then
-        MemberInfo memberInfo = memberService.getMemberInfo();
+        MemberInfo memberInfo = memberService.getMemberInfo(loginService.getLoginMemberIdx());
         assertThat(memberInfo.getNickName()).isEqualTo(requestInfo.getNickName());
     }
 
@@ -145,8 +145,8 @@ class MemberServiceImplTest {
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
       
         //when
-        memberService.deleteMember();
-        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> memberService.getMemberInfo());
+        memberService.deleteMember(loginService.getLoginMemberIdx());
+        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> memberService.getMemberInfo(loginService.getLoginMemberIdx()));
 
         //then
         assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);

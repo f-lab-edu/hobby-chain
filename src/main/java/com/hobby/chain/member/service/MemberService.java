@@ -13,7 +13,7 @@ public interface MemberService {
     public void signUp(MemberDTO memberDTO);
     public boolean exist(String email);
     public boolean isExistUser(long userId);
-    public MemberInfo getMemberInfo();
-    void updateMemberInfo(UpdateRequestInfo requestInfo);
-    void deleteMember();
+    public MemberInfo getMemberInfo(Long userId);
+    void updateMemberInfo(Long userId, UpdateRequestInfo requestInfo);
+    void deleteMember(Long userId);
 }

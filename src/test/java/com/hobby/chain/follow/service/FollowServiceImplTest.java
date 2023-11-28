@@ -75,7 +75,7 @@ class FollowServiceImplTest {
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
 
         //when
-        followService.subscribe(followee);
+        followService.subscribe(follower, followee);
 
         //then
         assertThat(followService.isFollowing(follower, followee)).isTrue();
@@ -85,12 +85,13 @@ class FollowServiceImplTest {
     void 중복_팔로우_테스트() {
         //given
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
+        long follower = loginService.getLoginMemberIdx();
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
-        followService.subscribe(followee);
+        followService.subscribe(follower, followee);
 
         //when
         AlreadyFollowingException ae = assertThrows(AlreadyFollowingException.class,
-                () -> followService.subscribe(followee));
+                () -> followService.subscribe(follower, followee));
 
         //then
         assertThat(ae.getClass()).isEqualTo(AlreadyFollowingException.class);
@@ -102,9 +103,10 @@ class FollowServiceImplTest {
         //given
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
         long followee = 0L;
+        long follower = loginService.getLoginMemberIdx();
 
         //when
-        NotExistUserException ne = assertThrows(NotExistUserException.class, () -> followService.subscribe(followee));
+        NotExistUserException ne = assertThrows(NotExistUserException.class, () -> followService.subscribe(follower, followee));
 
         //then
         assertThat(ne.getClass()).isEqualTo(NotExistUserException.class);
@@ -114,10 +116,11 @@ class FollowServiceImplTest {
     @DisplayName("로그인하지 않았을 때 상황")
     void 팔로우_테스트_followerX(){
         //given
+        long follower = loginService.getLoginMemberIdx();
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
 
         //when
-        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> followService.subscribe(followee));
+        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> followService.subscribe(follower, followee));
 
         //then
         assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);
@@ -129,10 +132,10 @@ class FollowServiceImplTest {
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
         long follower = loginService.getLoginMemberIdx();
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
-        followService.subscribe(followee);
+        followService.subscribe(follower, followee);
 
         //when
-        followService.unsubscribe(followee);
+        followService.unsubscribe(follower, followee);
 
         //then
         assertThat(followService.isFollowing(follower, followee)).isFalse();
@@ -143,10 +146,11 @@ class FollowServiceImplTest {
     void 언팔로우_테스트_followerX() {
         //given
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
+        long follower = loginService.getLoginMemberIdx();
 
         //when
         ForbiddenException fe = assertThrows(ForbiddenException.class,
-                () -> followService.unsubscribe(followee));
+                () -> followService.unsubscribe(follower, followee));
 
         //then
         assertThat(fe.getMessage()).isEqualTo("로그인이 필요한 기능입니다.");
@@ -157,10 +161,11 @@ class FollowServiceImplTest {
     void 언팔로우_테스트_subX() {
         //given
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
+        long follower = loginService.getLoginMemberIdx();
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
 
         //when
-        NotFollowingUserException ne = assertThrows(NotFollowingUserException.class, () -> followService.unsubscribe(followee));
+        NotFollowingUserException ne = assertThrows(NotFollowingUserException.class, () -> followService.unsubscribe(follower, followee));
 
         //then
         assertThat(ne.getClass()).isEqualTo(NotFollowingUserException.class);
@@ -170,12 +175,12 @@ class FollowServiceImplTest {
     void 팔로우_목록_가져오기(){
         //given
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
-        long userId = loginService.getLoginMemberIdx();
+        long follower = loginService.getLoginMemberIdx();
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
-        followService.subscribe(followee);
+        followService.subscribe(follower, followee);
 
         //when
-        List<Map<String, Long>> followees = followService.getFolloweeByUserId(userId);
+        List<Map<String, Long>> followees = followService.getFolloweeByUserId(follower);
 
         //then
         assertThat(followees.size()).isEqualTo(1);
@@ -200,12 +205,12 @@ class FollowServiceImplTest {
     void 팔로우_숫자_가져오기() {
         //given
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
-        long userId = loginService.getLoginMemberIdx();
+        long follower = loginService.getLoginMemberIdx();
         long followee = memberMapper.findById(testFolloweeUser.getEmail()).getUserId();
-        followService.subscribe(followee);
+        followService.subscribe(follower, followee);
 
         //when
-        long totalCount = followService.getFolloweeCountByUserId(userId);
+        long totalCount = followService.getFolloweeCountByUserId(follower);
 
         //then
         assertThat(totalCount).isEqualTo(1);

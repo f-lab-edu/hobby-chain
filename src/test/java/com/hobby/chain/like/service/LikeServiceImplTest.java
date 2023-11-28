@@ -62,9 +62,10 @@ class LikeServiceImplTest {
         //given
         postService.uploadNewPost(loginService.getLoginMemberIdx(), "test", null);
         long postId = postMapper.getLatestId();
+        long userId = loginService.getLoginMemberIdx();
 
         //when
-        likeService.like(postId);
+        likeService.like(userId, postId);
 
         //then
         assertThat(likeService.getLikeCount(postId)).isEqualTo(1);
@@ -76,10 +77,11 @@ class LikeServiceImplTest {
         //given
         postService.uploadNewPost(loginService.getLoginMemberIdx(), "test", null);
         long postId = postMapper.getLatestId();
+        long userId = loginService.getLoginMemberIdx();
 
         //when
-        likeService.like(postId);
-        AlreadyLikeException ae = assertThrows(AlreadyLikeException.class, () -> likeService.like(postId));
+        likeService.like(userId, postId);
+        AlreadyLikeException ae = assertThrows(AlreadyLikeException.class, () -> likeService.like(userId, postId));
 
         //then
         assertThat(ae.getClass()).isEqualTo(AlreadyLikeException.class);
@@ -90,9 +92,10 @@ class LikeServiceImplTest {
     void 좋아요_실패_테스트2() {
         //given
         long postId = 0L;
+        long userId = loginService.getLoginMemberIdx();
 
         //when
-        NoExistsPost ne = assertThrows(NoExistsPost.class, () -> likeService.like(postId));
+        NoExistsPost ne = assertThrows(NoExistsPost.class, () -> likeService.like(userId, postId));
 
         //then
         assertThat(ne.getClass()).isEqualTo(NoExistsPost.class);
@@ -103,10 +106,11 @@ class LikeServiceImplTest {
         //given
         postService.uploadNewPost(loginService.getLoginMemberIdx(), "test", null);
         long postId = postMapper.getLatestId();
-        likeService.like(postId);
+        long userId = loginService.getLoginMemberIdx();
+        likeService.like(userId, postId);
 
         //when
-        likeService.unlike(postId);
+        likeService.unlike(userId, postId);
 
         //then
         assertThat(likeService.getLikeCount(postId)).isEqualTo(0);
@@ -117,9 +121,10 @@ class LikeServiceImplTest {
     void 좋아요_취소_실패_테스트() {
         //given
         long postId = 0L;
+        long userId = loginService.getLoginMemberIdx();
 
         //when
-        NoExistsPost ne = assertThrows(NoExistsPost.class, () -> likeService.unlike(postId));
+        NoExistsPost ne = assertThrows(NoExistsPost.class, () -> likeService.unlike(userId, postId));
 
         //then
         assertThat(ne.getClass()).isEqualTo(NoExistsPost.class);
@@ -130,9 +135,10 @@ class LikeServiceImplTest {
     void 좋아요_취소_실패_테스트2() {
         //given
         long postId = postMapper.getLatestId();
+        long userId = loginService.getLoginMemberIdx();
 
         //when
-        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> likeService.unlike(postId));
+        ForbiddenException fe = assertThrows(ForbiddenException.class, () -> likeService.unlike(userId, postId));
 
         //then
         assertThat(fe.getClass()).isEqualTo(ForbiddenException.class);
