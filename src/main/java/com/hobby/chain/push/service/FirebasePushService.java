@@ -54,7 +54,7 @@ public class FirebasePushService implements PushService{
         FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
     }
 
-    public Message buildMessage(MessageDto messageDto){
+    private Message buildMessage(MessageDto messageDto){
         return Message.builder()
                 .putData("title", messageDto.getTitle())
                 .putData("body", messageDto.getBody())
