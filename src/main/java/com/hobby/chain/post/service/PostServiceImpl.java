@@ -50,13 +50,8 @@ public class PostServiceImpl implements PostService{
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void uploadImages(List<MultipartFile> images, long postId) throws FileUploadFailException{
-        List<ImageDTO> imageDTOS = toDTOS(images, postId);
-        fileMapper.uploadImages(imageDTOS);
-    }
-
-    private List<ImageDTO> toDTOS(List<MultipartFile> images, long postId) throws FileUploadFailException {
-         return fileService.uploadFiles(images, postId);
+    public void uploadImages(List<MultipartFile> images, long postId){
+        fileService.uploadFiles(images, postId);
     }
 
     @Override
