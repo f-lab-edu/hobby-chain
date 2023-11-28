@@ -16,6 +16,16 @@ spring:
   redis:
     host: localhost
     port: 6379
+  #RabbitMQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    template:
+      exchange: hobby.chain
+      routing-key: #라우팅 키
+      default-receive-queue: hobby.chain.queue
 
 # Mapper Xml Location
 mybatis:
