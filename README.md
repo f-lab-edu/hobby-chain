@@ -25,6 +25,4 @@ IntelliJ
 
 
 ### 🗂️ ERD
-<img width="690" alt="ERD 다이어그램" src="https://github.com/f-lab-edu/hobby-chain/assets/125573226/5399d1b8-f0a1-4370-86eb-e5bf35e4ebc0">
-
-- 인덱스는 조건에 자주 사용되는 컬럼으로 설정했습니다.
+![hobby-chain-erd](https://github.com/f-lab-edu/hobby-chain/assets/125573226/06d53063-e827-42d3-b6f3-b490f9c71b2b)
