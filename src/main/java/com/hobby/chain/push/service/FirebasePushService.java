@@ -4,6 +4,9 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.hobby.chain.push.PushType;
+import com.hobby.chain.push.dto.MessageDto;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -46,19 +49,17 @@ public class FirebasePushService implements PushService{
     }
 
     @Override
-    public void sendPushMessage(List<String> receiveIds, PushType pushType, String pushMessage) {
-        receiveIds.stream()
-                        .map(receiveId -> buildMessage(receiveId, pushType, pushMessage)
-                        .thenComposeAsync(message -> CompletableFuture.runAsync(() -> FirebaseMessaging.getInstance().sendAsync(message))));
+    @RabbitListener
+    public void sendPushMessage(final MessageDto message){
+        FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
     }
 
-    @Async
-    public CompletableFuture<Message> buildMessage(String receiveId, PushType pushType, String pushMessage){
-        return CompletableFuture.completedFuture(Message.builder()
-                .putData("title", pushType.getType())
-                .putData("body", pushMessage)
-                .putData("createTime", String.valueOf(LocalTime.now()))
-                .setToken(getToken(receiveId)).build());
+    public Message buildMessage(MessageDto messageDto){
+        return Message.builder()
+                .putData("title", messageDto.getTitle())
+                .putData("body", messageDto.getBody())
+                .putData("createTime", messageDto.getCreateTime())
+                .setToken(messageDto.getToken()).build();
     }
 
     private Object getAccessToken(){
