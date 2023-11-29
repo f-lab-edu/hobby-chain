@@ -16,8 +16,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -40,7 +40,7 @@ public class FileServiceImpl implements FileService{
     }
 
     public void uploadAndToDto(MultipartFile file, long postId) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             String fileName = file.getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
             String extension = fileName != null ? fileName.substring(fileName.lastIndexOf(".")) : null;
@@ -55,12 +55,6 @@ public class FileServiceImpl implements FileService{
                 throw new FileUploadFailException("버킷에 파일 업로드 중 실패하였습니다.");
             }
         }, customExecutor);
-
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e){
-            throw new FileUploadFailException();
-        }
     }
 
     private void uploadToBucket(String objectKey, byte[] fileData){
