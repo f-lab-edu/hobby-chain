@@ -9,6 +9,7 @@ import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.PostDTO;
 import com.hobby.chain.post.dto.ResponsePost;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,9 +67,10 @@ class PostServiceImplTest {
 
         //when
         service.uploadNewPost(loginService.getLoginMemberIdx(), postDTO.getPostContent(), null);
+        long postId = postMapper.getLatestId();
 
         //then
-        assertThat(postMapper.getAllPost()).isNotNull();
+        assertThat(postMapper.getPost(postId)).isNotNull();
     }
 
     @Test
@@ -85,9 +87,10 @@ class PostServiceImplTest {
 
         //when
         service.uploadNewPost(loginService.getLoginMemberIdx(), "테스트", files);
+        long postId = postMapper.getLatestId();
 
         //then
-        assertThat(postMapper.getAllPost()).isNotNull();
+        assertThat(postMapper.getPost(postId)).isNotNull();
     }
 
     @Test
