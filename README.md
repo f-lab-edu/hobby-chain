@@ -3,7 +3,7 @@
 - 프론트 엔드는 생략하고 백엔드에 초점을 맞춰 개발
 
 
-### ✏️ 사용 기술 및 개발 환경
+### ⌨️ 사용 기술 및 개발 환경
 Java
 Spring Boot
 MySQL
@@ -26,3 +26,7 @@ IntelliJ
 
 ### 🗂️ ERD
 ![hobby-chain-erd](https://github.com/f-lab-edu/hobby-chain/assets/125573226/06d53063-e827-42d3-b6f3-b490f9c71b2b)
+
+### ✏️ Architecture
+![hobby-chain-architecture](https://github.com/f-lab-edu/hobby-chain/assets/125573226/a6c4b4a8-a0cb-4834-abe9-ae33aab0611c)
+
