@@ -13,6 +13,7 @@ public interface FollowMapper {
     boolean isFollowing(@Param("follower") long follower, @Param("followee") long followee);
     long getFolloweeCountByUserId(@Param("followerId") long followerId);
     List<Map<String, Long>> getFolloweeByUserId(@Param("followerId") long followerId);
+    List<String> getFolloweeIds(@Param("followerId") long followerId);
     long getFollowerCountByUserId(@Param("followeeId") long followerId);
     List<Map<String, Long>> getFollowerByUserId(@Param("followeeId") long followerId);
 }

@@ -86,6 +86,11 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
+    public String getNicknameById(long userId) {
+        return memberMapper.getNicknameById(userId);
+    }
+
+    @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void updateMemberInfo(UpdateRequestInfo requestInfo){
         MemberInfo memberInfo = buildMemberInfo(requestInfo);

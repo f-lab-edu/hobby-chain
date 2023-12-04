@@ -14,6 +14,7 @@ public interface MemberService {
     public boolean exist(String email);
     public boolean isExistUser(long userId);
     public MemberInfo getMemberInfo();
+    public String getNicknameById(long userId);
     void updateMemberInfo(UpdateRequestInfo requestInfo);
     void deleteMember();
 }

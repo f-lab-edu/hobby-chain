@@ -34,6 +34,10 @@
         WHERE follower = #{followerId}
     </select>
 
+    <select id="getFolloweeIds" parameterType="long" resultType="String">
+        SELECT followee FROM member_follow WHERE follower = #{followerId}
+    </select>
+
     <select id="getFollowerByUserId" parameterType="long" resultType="map">
         SELECT mf.follower, m.nickName
         FROM `member` as m
