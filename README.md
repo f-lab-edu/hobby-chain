@@ -25,6 +25,8 @@ IntelliJ
 
 
 ### 🗂️ ERD
+인덱스에 대한 자세한 사항은 여기를 확인해 주세요 👉 [#20](https://github.com/f-lab-edu/hobby-chain/issues/20)
+
 ![hobby-chain-erd](https://github.com/f-lab-edu/hobby-chain/assets/125573226/06d53063-e827-42d3-b6f3-b490f9c71b2b)
 
 ### ✏️ Architecture
