@@ -3,29 +3,31 @@ package com.hobby.chain.push.service;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
-import com.hobby.chain.push.PushType;
 import com.hobby.chain.push.dto.MessageDto;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Service
 public class FirebasePushService implements PushService{
-    private final RedisTemplate<String, Object> redisTemplate;
+    @Value("${spring.rabbitmq.dlq.exchange}")
+    private String dlqExchange;
+    @Value("${spring.rabbitmq.dlq.routing-key}")
+    private String dlqRoutingKey;
 
-    public FirebasePushService(RedisTemplate<String, Object> redisTemplate) {
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final RabbitTemplate rabbitTemplate;
+
+    public FirebasePushService(RedisTemplate<String, Object> redisTemplate, RabbitTemplate rabbitTemplate) {
         this.redisTemplate = redisTemplate;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -49,8 +51,17 @@ public class FirebasePushService implements PushService{
     }
 
     @Override
-    @RabbitListener
+    @RabbitListener(queues = "q.hobbychain.message")
     public void sendPushMessage(final MessageDto message){
+        try{
+            FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
+        } catch (Exception e) {
+            rabbitTemplate.convertAndSend(dlqExchange, dlqRoutingKey, message);
+        }
+    }
+
+    @RabbitListener(queues = "q.hobbychain.dlx")
+    public void reSendPush(final MessageDto message){
         FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
     }
 

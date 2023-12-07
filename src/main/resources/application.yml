@@ -23,9 +23,13 @@ spring:
     username: guest
     password: guest
     template:
-      exchange: hobby.chain
-      routing-key: #라우팅 키
-      default-receive-queue: hobby.chain.queue
+      exchange: x.hobbychain
+      routing-key: hobby-chain-message-key
+      default-receive-queue: q.hobbychain.message
+    dlq:
+      exchange: x.hobbychain.dlx
+      routing-key: dead-letter-key
+      queue: q.hobbychain.dlx
 
 # Mapper Xml Location
 mybatis:

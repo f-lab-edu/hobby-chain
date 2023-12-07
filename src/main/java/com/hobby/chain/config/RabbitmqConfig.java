@@ -1,13 +1,7 @@
 package com.hobby.chain.config;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -33,6 +27,12 @@ public class RabbitmqConfig {
     private String routingKey;
     @Value("${spring.rabbitmq.template.default-receive-queue}")
     private String rabbitQueue;
+    @Value("${spring.rabbitmq.dlq.exchange}")
+    private String dlqExchange;
+    @Value("${spring.rabbitmq.dlq.routing-key}")
+    private String dlqRoutingKey;
+    @Value("${spring.rabbitmq.dlq.queue}")
+    private String dlqQueue;
 
     @Bean
     DirectExchange directExchange(){
@@ -47,6 +47,25 @@ public class RabbitmqConfig {
     @Bean
     Binding binding(DirectExchange directExchange, Queue queue) {
         return BindingBuilder.bind(queue).to(directExchange).with(routingKey);
+    }
+
+    //DLQ 설정
+    @Bean
+    DirectExchange dlqExchange() {
+        return new DirectExchange(dlqExchange);
+    }
+
+    @Bean
+    Queue dlqQueue() {
+        return QueueBuilder.durable(dlqQueue)
+                .deadLetterExchange(dlqExchange)
+                .deadLetterRoutingKey(dlqRoutingKey)
+                .build();
+    }
+
+    @Bean
+    Binding dlqBinding(Queue dlqQueue, DirectExchange dlqExchange) {
+        return BindingBuilder.bind(dlqQueue).to(dlqExchange).with(dlqRoutingKey);
     }
 
     @Bean
