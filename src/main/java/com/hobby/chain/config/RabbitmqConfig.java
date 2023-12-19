@@ -57,10 +57,7 @@ public class RabbitmqConfig {
 
     @Bean
     Queue dlqQueue() {
-        return QueueBuilder.durable(dlqQueue)
-                .deadLetterExchange(dlqExchange)
-                .deadLetterRoutingKey(dlqRoutingKey)
-                .build();
+        return new Queue(dlqQueue, true);
     }
 
     @Bean

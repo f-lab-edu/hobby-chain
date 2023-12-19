@@ -17,6 +17,10 @@ public class ProducerServiceImpl implements ProducerService{
     private String exchange;
     @Value("${spring.rabbitmq.template.routing-key}")
     private String routingKey;
+    @Value("${spring.rabbitmq.dlq.exchange}")
+    private String dlqExchange;
+    @Value("${spring.rabbitmq.dlq.routing-key}")
+    private String dlqRoutingKey;
 
     private final RabbitTemplate rabbitTemplate;
     private final PushService pushService;
@@ -27,12 +31,15 @@ public class ProducerServiceImpl implements ProducerService{
     }
 
     @Override
-    public void sendMessageToQueue(List<String> receiveIds, PushType pushType, String pushMessageo) {
+    public void sendMessageToQueue(List<String> receiveIds, PushType pushType, String pushMessage) {
         for (String receiveId : receiveIds) {
-            MessageDto messageDto = buildDto(receiveId, pushType, pushMessageo);
-            rabbitTemplate.convertAndSend(exchange, routingKey, messageDto);
+            MessageDto messageDto = buildDto(receiveId, pushType, pushMessage);
+            try{
+                rabbitTemplate.convertAndSend(exchange, routingKey, messageDto); //일반 message queue
+            } catch (RuntimeException re){
+                rabbitTemplate.convertAndSend(dlqExchange, dlqRoutingKey, messageDto); //queue에 전송 실패 시 dead letter queue
+            }
         }
-
     }
 
     private MessageDto buildDto(String receiveId, PushType pushType, String pushMessage){

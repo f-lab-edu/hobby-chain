@@ -53,15 +53,11 @@ public class FirebasePushService implements PushService{
     @Override
     @RabbitListener(queues = "q.hobbychain.message")
     public void sendPushMessage(final MessageDto message){
-        try{
-            FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
-        } catch (Exception e) {
-            rabbitTemplate.convertAndSend(dlqExchange, dlqRoutingKey, message);
-        }
+        FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
     }
 
     @RabbitListener(queues = "q.hobbychain.dlx")
-    public void reSendPush(final MessageDto message){
+    public void reSendPushMessage(MessageDto message){
         FirebaseMessaging.getInstance().sendAsync(buildMessage(message));
     }
 
