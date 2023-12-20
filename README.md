@@ -1,6 +1,15 @@
-# hobby-chain
-### 💬 취미 공유 SNS 서비스 'hobby-chain' 개발 프로젝트
-- 프론트 엔드는 생략하고 백엔드에 초점을 맞춰 REST API를 개발했습니다.
+# 💬 취미 공유 SNS 서비스 'hobby-chain' 개발 프로젝트
+
+## 🎯 프로젝트 목표
+
+1. **객체 지향 원리**를 적용하여 **CleanCode**를 목표로 유지보수가 용이한 코드 설계
+    - **SOLID 원리**의 이해를 바탕으로 최대한 5가지의 원칙을 준수하기 위해 노력하였습니다.
+    - **추상체**를 제공하여 구현체가 변경되어도 다른 구현체에는 무리가 없도록 하였습니다.
+  
+      
+2. 단순한 기능 구현이 아닌, 대용량 트래픽을 고려하여 **scale-out**을 고려한 설계
+    - 동시 접속자 수가 많다고 가정하여, 많은 유저를 감당할 수 있는 **분산 시스템 아키텍처 구축**을 위해 노력하였습니다.
+    - HTTP 특성의 이해를 기반으로 세션 및 이미지 스토리지를 사용하여 무상태를 보존하는 등 **확장에 용이**하도록 노력하였습니다.
 
 
 ## ⌨️ 사용 기술 및 개발 환경
@@ -18,12 +27,15 @@
 
 
 ## ✏️ Architecture
-![hobby-chain-architecture drawio](https://github.com/f-lab-edu/hobby-chain/assets/125573226/ad89e50c-54fb-44d3-82e4-923f9192e7b3)
+![hobby-chain-architecture drawio (1)](https://github.com/f-lab-edu/hobby-chain/assets/125573226/4bad5dee-e2bc-47df-9c43-ad832cdf7eb3)
+
 
 ## 🗂️ ERD
 인덱스에 대한 자세한 사항은 여기를 확인해 주세요 👉 [#20](https://github.com/f-lab-edu/hobby-chain/issues/20)
 
-![hobby-chain-erd](https://github.com/f-lab-edu/hobby-chain/assets/125573226/06d53063-e827-42d3-b6f3-b490f9c71b2b)
+<img width="755" alt="hobby-chain-db" src="https://github.com/f-lab-edu/hobby-chain/assets/125573226/93ddce7b-744b-4d22-963f-6f91ab60fe72">
+
+
 
 ## 🔎 주요 기능
 1. 회원가입 / 탈퇴
