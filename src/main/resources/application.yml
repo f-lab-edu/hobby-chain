@@ -1,34 +1,57 @@
-#MySQL DB Setting
 spring:
+  #MySQL Master Config
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hobby_chain
-    username: root
-    password: 1234
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+    master:
+      hikari:
+        username: root
+        password: #비밀번호
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://118.67.131.25:3306/hobby_chain?autoreconnect=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    #MySQL Slave Config
+    slave:
+      hikari:
+        username: seohyun
+        password: #비밀번호
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://49.50.173.195:3307/hobby_chain?autoreconnect=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
   #devtools
   devtools:
     livereload:
       enabled: true
     restart:
       enabled: true
-  #redis session
   session:
     store-type: redis
   redis:
-    host: localhost
+    host: 101.101.218.43
     port: 6379
-  #object storage config
-  config:
-    import:
-    - classpath:/application.yml
-    - classpath:/application-aws.yml
-
-# Mapper
+  #RabbitMQ
+  rabbitmq:
+    host: 49.50.164.228
+    port: 5672
+    username: admin
+    password: hobby-chain-rabbitmq
+    template:
+      exchange: x.hobbychain
+      routing-key: hobby-chain-message-key
+      default-receive-queue: q.hobbychain.message
+    dlq:
+      exchange: x.hobbychain.dlx
+      routing-key: dead-letter-key
+      queue: q.hobbychain.dlx
+# Mapper Xml Location
 mybatis:
   mapper-locations: classpath:mappers/*.xml
   configuration:
     map-underscore-to-camel-case: true
+
+hobby:
+  chain:
+    file:
+      dir: /Users/mac/Desktop/imgDir
+
+# Firebase Service
+firebase:
+  account:
+    key:
+      path: hobby-chain-firebase-adminsdk.json
