@@ -1,7 +1,0 @@
-naver:
-  objectStorage:
-    endpoint: https://kr.object.ncloudstorage.com
-    regionName: kr-standard
-    accessKey: n2o0IGAWDF85SkIoigJZ
-    secretKey: EqMXABj74Mv3w9yx2NDBnFW2c460CAOhvHixBYfQ
-    bucketName: hobby-chain-bucket
