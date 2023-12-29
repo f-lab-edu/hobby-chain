@@ -4,14 +4,14 @@ spring:
     master:
       hikari:
         username: root
-        password: #비밀번호
+        password: hobbychain12*
         driver-class-name: com.mysql.cj.jdbc.Driver
         jdbc-url: jdbc:mysql://118.67.131.25:3306/hobby_chain?autoreconnect=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     #MySQL Slave Config
     slave:
       hikari:
         username: seohyun
-        password: #비밀번호
+        password: hobbychain12*
         driver-class-name: com.mysql.cj.jdbc.Driver
         jdbc-url: jdbc:mysql://49.50.173.195:3307/hobby_chain?autoreconnect=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
   #devtools
