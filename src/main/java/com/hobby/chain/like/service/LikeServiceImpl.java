@@ -13,12 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LikeServiceImpl implements LikeService{
     private final LikeMapper likeMapper;
-    private final MemberLoginService loginService;
     private final PostService postService;
 
-    public LikeServiceImpl(LikeMapper likeMapper, MemberLoginService loginService, PostService postService) {
+    public LikeServiceImpl(LikeMapper likeMapper, PostService postService) {
         this.likeMapper = likeMapper;
-        this.loginService = loginService;
         this.postService = postService;
     }
 
@@ -49,6 +47,7 @@ public class LikeServiceImpl implements LikeService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long getLikeCount(long postId) {
         return likeMapper.getLikeByPostId(postId);
     }
@@ -58,11 +57,8 @@ public class LikeServiceImpl implements LikeService{
         if(!existsPost) throw new NoExistsPost();
     }
 
-    private boolean isLike(Long userId, long postId) {
+    @Transactional(readOnly = true)
+    public boolean isLike(Long userId, long postId) {
         return likeMapper.isLike(postId, userId);
-    }
-
-    private long getLoginUser(){
-        return loginService.getLoginMemberIdx();
     }
 }
