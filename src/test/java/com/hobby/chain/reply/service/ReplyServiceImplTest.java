@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @SpringBootTest
+@Transactional
 class ReplyServiceImplTest {
     private final ReplyService replyService;
     private final PostService postService;
