@@ -55,6 +55,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponsePost getPost(long postId) {
         if(isExistsPost(postId)) {
             return mapper.getPost(postId);
@@ -64,6 +65,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResponsePost> getPosts(long start) {
         long startIdx = mapper.getLatestId() - start;
         return mapper.getPosts(startIdx);
@@ -80,6 +82,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isExistsPost(long postId) {
         return mapper.isExistsPost(postId);
     }

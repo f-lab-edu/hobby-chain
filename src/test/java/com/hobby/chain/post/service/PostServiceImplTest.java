@@ -1,6 +1,7 @@
 package com.hobby.chain.post.service;
 
 import com.hobby.chain.member.Gender;
+import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.service.MemberLoginService;
@@ -8,8 +9,8 @@ import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.PostDTO;
 import com.hobby.chain.post.dto.ResponsePost;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,13 +33,15 @@ class PostServiceImplTest {
     private PostService service;
     private MemberService memberService;
     private final MemberLoginService loginService;
+    private final MemberMapper memberMapper;
 
     @Autowired
-    public PostServiceImplTest(PostMapper postMapper, PostService service, MemberService memberService, MemberLoginService loginService) {
+    public PostServiceImplTest(PostMapper postMapper, PostService service, MemberService memberService, MemberLoginService loginService, MemberMapper memberMapper) {
         this.postMapper = postMapper;
         this.service = service;
         this.memberService = memberService;
         this.loginService = loginService;
+        this.memberMapper = memberMapper;
     }
 
     private MemberDTO memberDTO;
@@ -56,6 +59,11 @@ class PostServiceImplTest {
         memberService.signUp(memberDTO);
 
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
+    }
+
+    @AfterEach
+    void deleteAllData(){
+        memberMapper.deleteAll();
     }
 
     @Test

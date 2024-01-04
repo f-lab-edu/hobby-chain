@@ -24,6 +24,7 @@ public class ReplyServiceImpl implements ReplyService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ReplyResponse> getReplysByPostId(long postId, long startIdx) {
         return replyMapper.getReplysByPostId(postId, startIdx);
     }

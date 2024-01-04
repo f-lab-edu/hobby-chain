@@ -1,8 +1,8 @@
 package com.hobby.chain.like.service;
 
-import com.hobby.chain.follow.exception.AlreadyFollowingException;
 import com.hobby.chain.like.exception.AlreadyLikeException;
 import com.hobby.chain.member.Gender;
+import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.service.MemberLoginService;
@@ -10,7 +10,7 @@ import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.exception.NoExistsPost;
 import com.hobby.chain.post.service.PostService;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,16 +29,18 @@ class LikeServiceImplTest {
     private final MemberLoginService loginService;
     private final PostService postService;
     private final PostMapper postMapper;
+    private final MemberMapper memberMapper;
 
     private MemberDTO memberDTO;
 
     @Autowired
-    LikeServiceImplTest(LikeService likeService, MemberService memberService, MemberLoginService loginService, PostService postService, PostMapper postMapper) {
+    LikeServiceImplTest(LikeService likeService, MemberService memberService, MemberLoginService loginService, PostService postService, PostMapper postMapper, MemberMapper memberMapper) {
         this.likeService = likeService;
         this.memberService = memberService;
         this.loginService = loginService;
         this.postService = postService;
         this.postMapper = postMapper;
+        this.memberMapper = memberMapper;
     }
 
     @BeforeEach
@@ -55,6 +57,11 @@ class LikeServiceImplTest {
         memberService.signUp(memberDTO);
 
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
+    }
+
+    @AfterEach
+    void deleteAllData(){
+        memberMapper.deleteAll();
     }
 
     @Test

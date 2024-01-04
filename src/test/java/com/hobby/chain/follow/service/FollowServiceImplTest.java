@@ -67,6 +67,11 @@ class FollowServiceImplTest {
         memberService.signUp(testFolloweeUser);
     }
 
+    @AfterEach
+    void deleteAllData(){
+        memberMapper.deleteAll();
+    }
+
     @Test
     void 팔로우_정상_테스트() {
         //given

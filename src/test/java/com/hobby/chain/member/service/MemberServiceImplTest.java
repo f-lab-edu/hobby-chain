@@ -1,11 +1,13 @@
 package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.Gender;
+import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.dto.MemberInfo;
 import com.hobby.chain.member.dto.UpdateRequestInfo;
 import com.hobby.chain.member.exception.DuplicationException;
 import com.hobby.chain.member.exception.ForbiddenException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,11 +26,18 @@ class MemberServiceImplTest {
 
     private final MemberService memberService;
     private final MemberLoginService loginService;
+    private final MemberMapper memberMapper;
 
     @Autowired
-    public MemberServiceImplTest(MemberService memberService, MemberLoginService loginService) {
+    public MemberServiceImplTest(MemberService memberService, MemberLoginService loginService, MemberMapper memberMapper) {
         this.memberService = memberService;
         this.loginService = loginService;
+        this.memberMapper = memberMapper;
+    }
+
+    @AfterEach
+    void deleteAllData(){
+        memberMapper.deleteAll();
     }
 
     @Test
