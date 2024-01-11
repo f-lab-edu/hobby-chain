@@ -116,10 +116,10 @@ public class PostServiceImpl implements PostService{
         }
     }
 
-    private void pushMessage(long userId){
-        List<String> ids = followService.getFolloweeIds(userId);
-
-        String nickname = memberService.getNicknameById(userId);
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void pushMessage(long userId){
+        List<String> ids = followService.getFolloweeIds(userId); // 알림 보낼 id
+        String nickname = memberService.getNicknameById(userId); // 게시글을 작성한 유저 닉네임
 
         String pushMessage =
                 messageSource.getMessage(
