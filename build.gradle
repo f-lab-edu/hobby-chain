@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'com.rabbitmq:amqp-client:5.16.0'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.11.238'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	runtimeOnly 'com.mysql:mysql-connector-j'

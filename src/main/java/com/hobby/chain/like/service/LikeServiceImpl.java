@@ -15,20 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeServiceImpl implements LikeService{
     private final LikeMapper likeMapper;
     private final MemberLoginService loginService;
-    private final PostService postService;
 
-    public LikeServiceImpl(LikeMapper likeMapper, MemberLoginService loginService, PostService postService) {
+    public LikeServiceImpl(LikeMapper likeMapper, MemberLoginService loginService) {
         this.likeMapper = likeMapper;
         this.loginService = loginService;
-        this.postService = postService;
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void like(long postId) {
+    @Transactional
+    public void like(Long userId, long postId) {
         checkExistsPost(postId);
-
-        long userId = getLoginUser();
 
         try{
             likeMapper.insertLike(postId, userId);
@@ -40,13 +36,12 @@ public class LikeServiceImpl implements LikeService{
     }
 
     @Override
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void unlike(long postId) {
+    @Transactional
+    public void unlike(Long userId, long postId) {
         checkExistsPost(postId);
 
-        boolean like = isLike(postId);
-        if(like) {
-            likeMapper.deleteLike(postId, getLoginUser());
+        if(isLike(userId, postId)) {
+            likeMapper.deleteLike(postId, userId);
         } else {
             throw new ForbiddenException("좋아요를 삭제할 권한이 없습니다.");
         }
@@ -62,8 +57,7 @@ public class LikeServiceImpl implements LikeService{
         if(!existsPost) throw new NoExistsPost();
     }
 
-    private boolean isLike(long postId) {
-        long userId = getLoginUser();
+    private boolean isLike(Long userId, long postId) {
         return likeMapper.isLike(postId, userId);
     }
 

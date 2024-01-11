@@ -8,11 +8,11 @@ import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.dto.ResponsePost;
 import com.hobby.chain.post.exception.FileUploadFailException;
-import com.hobby.chain.post.exception.NoExistsPost;
 import com.hobby.chain.push.PushType;
 import com.hobby.chain.push.service.LocaleService;
 import com.hobby.chain.push.service.ProducerService;
 import org.springframework.context.MessageSource;
+import com.hobby.chain.post.exception.NoExistException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -50,10 +50,11 @@ public class PostServiceImpl implements PostService{
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void uploadNewPost(long userId, String content, List<MultipartFile> images) {
         //첫 트랜잭션 - 포스트 업로드
+        if (userId != loginService.getLoginMemberIdx()) throw new ForbiddenException();
+
         long postId = insertPost(userId, content);
 
-        if (CollectionUtils.isEmpty(images)){
-            //두번째 트랜잭션 - 파일 업로드
+        if (!CollectionUtils.isEmpty(images)){
             uploadImages(images, postId);
         }
 
@@ -67,36 +68,29 @@ public class PostServiceImpl implements PostService{
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void uploadImages(List<MultipartFile> images, long postId) throws FileUploadFailException{
-        List<ImageDTO> imageDTOS = toDTOS(images, postId);
-        fileMapper.uploadImages(imageDTOS);
-    }
-
-    private List<ImageDTO> toDTOS(List<MultipartFile> images, long postId) throws FileUploadFailException {
-         return fileService.uploadFiles(images, postId);
+    public void uploadImages(List<MultipartFile> images, long postId){
+        fileService.uploadFiles(images, postId);
     }
 
     @Override
     public ResponsePost getPost(long postId) {
-        boolean isExistsPost = mapper.isExistsPost(postId);
-
-        if(isExistsPost) {
+        if(isExistsPost(postId)) {
             return mapper.getPost(postId);
         } else {
-            throw new NoExistsPost("게시물이 존재하지 않습니다.");
+            throw new NoExistException("게시물이 존재하지 않습니다.");
         }
     }
 
     @Override
-    public List<ResponsePost> getPosts(long currentSeq) {
-        long startIdx = mapper.getLatestId() - (currentSeq*15);
+    public List<ResponsePost> getPosts(long start) {
+        long startIdx = mapper.getLatestId() - start;
         return mapper.getPosts(startIdx);
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void updatePost(long userId, long postId, String content) {
-        boolean authorizedOnPost = mapper.isAuthorizedOnPost(userId, postId);
-        if(authorizedOnPost){
+        if(isAuthorizedOnPost(userId, postId)){
             mapper.updatePost(content, postId);
         } else{
             throw new ForbiddenException("게시물을 수정할 권한이 없습니다.");
@@ -104,9 +98,14 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    public boolean isExistsPost(long postId) {
+        return mapper.isExistsPost(postId);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deletePost(long userId, long postId) {
-        boolean authorizedOnPost = mapper.isAuthorizedOnPost(userId, postId);
-        if(authorizedOnPost){
+        if(isAuthorizedOnPost(userId, postId)){
             if(mapper.isExistsImage(postId)){
                 fileMapper.deleteImages(postId);
             }
@@ -115,6 +114,7 @@ public class PostServiceImpl implements PostService{
             throw new ForbiddenException("게시물을 삭제할 권한이 없습니다.");
         }
     }
+
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void pushMessage(long userId){
@@ -127,5 +127,13 @@ public class PostServiceImpl implements PostService{
                         localeService.getCurrentLocale());
 
         producerService.sendMessageToQueue(ids, PushType.NEW_POST, pushMessage);
+    }
+  
+    private boolean isAuthorizedOnPost(long userId, long postId){
+        return mapper.isAuthorizedOnPost(userId, postId);
+    }
+
+    private long getTotalCount(){
+        return mapper.getTotalCount();
     }
 }

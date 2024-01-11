@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hobby.chain.reply.domain.mapper.ReplyMapper">
+    <insert id="insertReply">
+        INSERT INTO post_reply(post_id, user_id, content, regdate)
+        VALUES (#{postId}, #{userId}, #{content}, NOW())
+    </insert>
+
+    <select id="getReplysByPostId" resultType="com.hobby.chain.reply.dto.ReplyResponse">
+        SELECT m.nickName, pr.content, pr.regdate
+        FROM post_reply as pr
+        JOIN member as m
+        on m.user_id = pr.user_id
+        WHERE pr.post_id = #{postId} AND pr.reply_id <![CDATA[<=]]> #{startIdx}
+        ORDER BY pr.reply_id DESC
+        limit 20
+    </select>
+</mapper>

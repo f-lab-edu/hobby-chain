@@ -76,13 +76,13 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
         if(userId != null){
             return (long) userId;
         } else {
-            throw new ForbiddenException("로그인이 필요한 기능입니다.");
+            throw new ForbiddenException();
         }
     }
 
     @Override
-    public MemberInfo getMemberInfo() {
-        return memberMapper.getMemberInfo(getLoginMemberIdx());
+    public MemberInfo getMemberInfo(Long userId) {
+        return memberMapper.getMemberInfo(userId);
     }
 
     @Override
@@ -92,14 +92,14 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void updateMemberInfo(UpdateRequestInfo requestInfo){
-        MemberInfo memberInfo = buildMemberInfo(requestInfo);
+    public void updateMemberInfo(Long userId, UpdateRequestInfo requestInfo){
+        MemberInfo memberInfo = buildMemberInfo(userId, requestInfo);
         memberMapper.updateMemberInfo(memberInfo);
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void deleteMember() {
+    public void deleteMember(Long userId) {
         memberMapper.deleteMember(getLoginMemberIdx());
         logout();
     }
@@ -116,9 +116,9 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
                 .build();
     }
 
-    private MemberInfo buildMemberInfo(UpdateRequestInfo requestInfo){
+    private MemberInfo buildMemberInfo(Long userId, UpdateRequestInfo requestInfo){
         return MemberInfo.builder().
-                userId(getLoginMemberIdx())
+                userId(userId)
                 .nickName(requestInfo.getNickName())
                 .phoneNumber(requestInfo.getPhoneNumber())
                 .gender(requestInfo.getGender())
@@ -129,12 +129,5 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     @Override
     public boolean isExistUser(long userId) {
         return memberMapper.isExistMemberById(userId);
-    }
-
-    public void loginCheck(long userId) throws ForbiddenException{
-        long loginMemberIdx = getLoginMemberIdx();
-        if(userId != loginMemberIdx){
-            throw new ForbiddenException("로그인이 필요한 기능입니다.");
-        }
     }
 }

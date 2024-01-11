@@ -1,9 +1,6 @@
 package com.hobby.chain.member.controller;
 
-import com.hobby.chain.member.dto.MemberDTO;
-import com.hobby.chain.member.dto.MemberInfo;
-import com.hobby.chain.member.dto.MemberLogin;
-import com.hobby.chain.member.dto.UpdateRequestInfo;
+import com.hobby.chain.member.dto.*;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
 import org.springframework.http.HttpStatus;
@@ -40,17 +37,17 @@ public class MemberController {
     }
 
     @GetMapping("/me")
-    public MemberInfo getMemberInfo(){
-        return memberService.getMemberInfo();
+    public MemberInfo getMemberInfo(CertificatedMember memberId){
+        return memberService.getMemberInfo(memberId.getUserId());
     }
 
     @PutMapping("/edit")
-    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo){
-        memberService.updateMemberInfo(requestInfo);
+    public void updateMemberInfo(@RequestBody UpdateRequestInfo requestInfo, CertificatedMember memberId){
+        memberService.updateMemberInfo(memberId.getUserId(), requestInfo);
     }
 
     @DeleteMapping
-    public void deleteMember(){
-        memberService.deleteMember();
+    public void deleteMember(CertificatedMember memberId){
+        memberService.deleteMember(memberId.getUserId());
     }
 }

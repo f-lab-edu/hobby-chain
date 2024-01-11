@@ -13,7 +13,6 @@ public interface PostMapper {
     void insertPost(@Param("userId") long userId, @Param("postContent") String postContent);
     boolean isExistsPost(long postId);
     boolean isExistsImage(long postId);
-    List<ResponsePost> getAllPost();
     List<ResponsePost> getPosts(long startIdx);
     ResponsePost getPost(long postId);
     long getLatestId();
