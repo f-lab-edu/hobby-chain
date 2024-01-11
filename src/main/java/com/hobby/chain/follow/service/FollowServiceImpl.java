@@ -74,6 +74,11 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
+    public List<String> getFolloweeIds(long userId) {
+        return followMapper.getFolloweeIds(userId);
+    }
+
+    @Override
     public long getFollowerCountByUserId(long userId) {
         isExistUserCheck(userId);
         return followMapper.getFollowerCountByUserId(userId);

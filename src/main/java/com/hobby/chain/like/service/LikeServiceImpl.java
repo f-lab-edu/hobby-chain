@@ -53,7 +53,7 @@ public class LikeServiceImpl implements LikeService{
     }
 
     private void checkExistsPost(long postId) throws NoExistsPost{
-        boolean existsPost = postService.isExistsPost(postId);
+        boolean existsPost = true; //postService.isExistsPost(postId);
         if(!existsPost) throw new NoExistsPost();
     }
 

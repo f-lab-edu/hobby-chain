@@ -1,12 +1,17 @@
 package com.hobby.chain.post.service;
 
+import com.hobby.chain.follow.service.FollowService;
 import com.hobby.chain.member.exception.ForbiddenException;
-import com.hobby.chain.member.service.MemberLoginService;
+import com.hobby.chain.member.service.MemberService;
 import com.hobby.chain.post.domain.mapper.FileMapper;
 import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.dto.ImageDTO;
 import com.hobby.chain.post.dto.ResponsePost;
 import com.hobby.chain.post.exception.FileUploadFailException;
+import com.hobby.chain.push.PushType;
+import com.hobby.chain.push.service.LocaleService;
+import com.hobby.chain.push.service.ProducerService;
+import org.springframework.context.MessageSource;
 import com.hobby.chain.post.exception.NoExistException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -15,25 +20,36 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PostServiceImpl implements PostService{
     private final PostMapper mapper;
     private final FileService fileService;
     private final FileMapper fileMapper;
-    private final MemberLoginService loginService;
+    private final MemberService memberService;
+    private final FollowService followService;
+    private final ProducerService producerService;
+    private final MessageSource messageSource;
+    private final LocaleService localeService;
 
-    public PostServiceImpl(PostMapper mapper, FileService fileService, FileMapper fileMapper, MemberLoginService loginService) {
+    public PostServiceImpl(PostMapper mapper, FileService fileService, FileMapper fileMapper, MemberService memberService, FollowService followService, ProducerService producerService, MessageSource messageSource, LocaleService localeService) {
         this.mapper = mapper;
         this.fileService = fileService;
         this.fileMapper = fileMapper;
-        this.loginService = loginService;
+        this.memberService = memberService;
+        this.followService = followService;
+        this.producerService = producerService;
+        this.messageSource = messageSource;
+        this.localeService = localeService;
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void uploadNewPost(long userId, String content, List<MultipartFile> images) {
+        //첫 트랜잭션 - 포스트 업로드
         if (userId != loginService.getLoginMemberIdx()) throw new ForbiddenException();
 
         long postId = insertPost(userId, content);
@@ -41,6 +57,8 @@ public class PostServiceImpl implements PostService{
         if (!CollectionUtils.isEmpty(images)){
             uploadImages(images, postId);
         }
+
+        pushMessage(userId);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -97,6 +115,20 @@ public class PostServiceImpl implements PostService{
         }
     }
 
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void pushMessage(long userId){
+        List<String> ids = followService.getFolloweeIds(userId); // 알림 보낼 id
+        String nickname = memberService.getNicknameById(userId); // 게시글을 작성한 유저 닉네임
+
+        String pushMessage =
+                messageSource.getMessage(
+                        "push.message.post", new String[] {nickname},
+                        localeService.getCurrentLocale());
+
+        producerService.sendMessageToQueue(ids, PushType.NEW_POST, pushMessage);
+    }
+  
     private boolean isAuthorizedOnPost(long userId, long postId){
         return mapper.isAuthorizedOnPost(userId, postId);
     }
