@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hobby.chain.member.domain.mapper.MemberMapper">
+
+    <select id="isExistMemberByEmail" parameterType="String" resultType="boolean">
+        SELECT EXISTS(
+            SELECT email
+            FROM member
+            WHERE email = #{email})
+    </select>
+
+    <select id="isExistMemberById" parameterType="long" resultType="boolean">
+        SELECT EXISTS(
+            SELECT user_id
+            FROM member
+            WHERE user_id = #{userId})
+    </select>
+
+    <insert id="insertMember" parameterType="com.hobby.chain.member.dto.MemberDTO">
+        INSERT INTO member(email, password, name, nickName, phoneNumber, gender, birth, regdate)
+        VALUES (#{email}, #{password}, #{name}, #{nickName}, #{phoneNumber}, #{gender}, #{birth}, NOW())
+    </insert>
+
+    <select id="findById" parameterType="String" resultType="com.hobby.chain.member.dto.MemberLogin">
+            SELECT user_id, email, password FROM member
+            WHERE email = #{email}
+    </select>
+  
+    <select id="getMemberInfo" parameterType="long" resultType="com.hobby.chain.member.dto.MemberInfo">
+            SELECT email, name, nickName, phoneNumber, gender, birth, regdate FROM member
+            WHERE user_id = #{userId}
+    </select>
+
+    <select id="getNicknameById" parameterType="long" resultType="String">
+        SELECT nickName FROM member WHERE user_id = #{userId}
+    </select>
+
+    <update id="updateMemberInfo" parameterType="com.hobby.chain.member.dto.MemberInfo">
+        update member
+        set nickName = #{nickName}, phoneNumber = #{phoneNumber}, gender = #{gender}, birth = #{birth}
+        where user_id = #{userId}
+    </update>
+    
+    <delete id="deleteMember" parameterType="long">
+        delete from member where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteAll">
+        delete from member
+    </delete>
+
+</mapper>

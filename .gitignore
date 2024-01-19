@@ -33,5 +33,5 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
+### yml ###
+src/main/resources/application-aws.yml
