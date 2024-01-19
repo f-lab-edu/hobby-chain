@@ -17,4 +17,5 @@ public interface MemberMapper {
     String getNicknameById(@Param("userId") long userId);
     void updateMemberInfo(MemberInfo memberInfo);
     void deleteMember(@Param("userId") long userId);
+    void deleteAll();
 }

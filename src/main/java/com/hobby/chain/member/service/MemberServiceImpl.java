@@ -45,7 +45,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = true)
     public boolean exist(String userId) {
         return memberMapper.isExistMemberByEmail(userId);
     }
@@ -71,6 +71,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long getLoginMemberIdx() throws ForbiddenException{
         Object userId = session.getAttribute(SessionKey.MEMBER_IDX);
         if(userId != null){
@@ -81,6 +82,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberInfo getMemberInfo(Long userId) {
         return memberMapper.getMemberInfo(userId);
     }
@@ -127,6 +129,7 @@ public class MemberServiceImpl implements MemberService, MemberLoginService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isExistUser(long userId) {
         return memberMapper.isExistMemberById(userId);
     }

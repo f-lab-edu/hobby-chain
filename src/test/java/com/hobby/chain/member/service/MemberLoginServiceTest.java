@@ -1,6 +1,7 @@
 package com.hobby.chain.member.service;
 
 import com.hobby.chain.member.Gender;
+import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.exception.ForbiddenException;
 import com.hobby.chain.member.exception.IncorrectPasswordException;
@@ -20,11 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class MemberLoginServiceTest {
     private final MemberService memberService;
     private final MemberLoginService loginService;
+    private final MemberMapper memberMapper;
 
     @Autowired
-    public MemberLoginServiceTest(MemberService memberService, MemberLoginService loginService) {
+    public MemberLoginServiceTest(MemberService memberService, MemberLoginService loginService, MemberMapper memberMapper) {
         this.memberService = memberService;
         this.loginService = loginService;
+        this.memberMapper = memberMapper;
     }
 
     @BeforeEach
@@ -38,6 +41,11 @@ public class MemberLoginServiceTest {
                 .gender(Gender.M)
                 .birth("20040227").build();
         memberService.signUp(memberDTO);
+    }
+
+    @AfterEach
+    void deleteAllData(){
+        memberMapper.deleteAll();
     }
 
     @Test

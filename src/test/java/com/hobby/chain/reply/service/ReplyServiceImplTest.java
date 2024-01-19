@@ -1,6 +1,7 @@
 package com.hobby.chain.reply.service;
 
 import com.hobby.chain.member.Gender;
+import com.hobby.chain.member.domain.mapper.MemberMapper;
 import com.hobby.chain.member.dto.MemberDTO;
 import com.hobby.chain.member.service.MemberLoginService;
 import com.hobby.chain.member.service.MemberService;
@@ -8,6 +9,7 @@ import com.hobby.chain.post.domain.mapper.PostMapper;
 import com.hobby.chain.post.service.PostService;
 import com.hobby.chain.reply.dto.ReplyResponse;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @SpringBootTest
+@Transactional
 class ReplyServiceImplTest {
     private final ReplyService replyService;
     private final PostService postService;
     private final PostMapper postMapper;
     private final MemberService memberService;
     private final MemberLoginService loginService;
+    private final MemberMapper memberMapper;
 
     @Autowired
-    ReplyServiceImplTest(ReplyService replyService, PostService postService, PostMapper postMapper, MemberService memberService, MemberLoginService loginService) {
+    ReplyServiceImplTest(ReplyService replyService, PostService postService, PostMapper postMapper, MemberService memberService, MemberLoginService loginService, MemberMapper memberMapper) {
         this.replyService = replyService;
         this.postService = postService;
         this.postMapper = postMapper;
         this.memberService = memberService;
         this.loginService = loginService;
+        this.memberMapper = memberMapper;
     }
 
     @BeforeEach
@@ -49,6 +54,11 @@ class ReplyServiceImplTest {
         loginService.login(memberDTO.getEmail(), memberDTO.getPassword());
 
         postService.uploadNewPost(loginService.getLoginMemberIdx(), "test", null);
+    }
+
+    @AfterEach
+    void deleteAllData(){
+        memberMapper.deleteAll();
     }
 
     @Test

@@ -26,7 +26,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public void subscribe(Long follower, long followee) {
         isExistUserCheck(followee);
 
@@ -39,7 +39,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public void unsubscribe(Long follower, long followee) {
         isExistUserCheck(followee);
 
@@ -51,29 +51,34 @@ public class FollowServiceImpl implements FollowService{
         }
     }
 
-    private void isExistUserCheck(long userId) throws NotExistUserException{
+    @Transactional(readOnly = true)
+    public void isExistUserCheck(long userId) throws NotExistUserException{
         boolean existUser = memberService.isExistUser(userId);
         if(!existUser) throw new NotExistUserException();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isFollowing(long follower, long followee) {
         return followMapper.isFollowing(follower, followee);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long getFolloweeCountByUserId(long userId) {
         isExistUserCheck(userId);
         return followMapper.getFolloweeCountByUserId(userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Map<String, Long>> getFolloweeByUserId(long userId) {
         isExistUserCheck(userId);
         return followMapper.getFolloweeByUserId(userId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getFolloweeIds(long userId) {
         return followMapper.getFolloweeIds(userId);
     }
@@ -85,6 +90,7 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Map<String, Long>> getFollowerByUserId(long userId) {
         isExistUserCheck(userId);
         return followMapper.getFollowerByUserId(userId);
