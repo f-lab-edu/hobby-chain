@@ -14,6 +14,7 @@ public interface MemberMapper {
     void insertMember(MemberDTO memberDTO);
     MemberLogin findById(String email);
     MemberInfo getMemberInfo(long userId);
+    String getNicknameById(@Param("userId") long userId);
     void updateMemberInfo(MemberInfo memberInfo);
     void deleteMember(@Param("userId") long userId);
     void deleteAll();

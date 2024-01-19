@@ -79,6 +79,11 @@ public class FollowServiceImpl implements FollowService{
 
     @Override
     @Transactional(readOnly = true)
+    public List<String> getFolloweeIds(long userId) {
+        return followMapper.getFolloweeIds(userId);
+    }
+
+    @Override
     public long getFollowerCountByUserId(long userId) {
         isExistUserCheck(userId);
         return followMapper.getFollowerCountByUserId(userId);
